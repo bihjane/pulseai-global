@@ -79,21 +79,22 @@ const daysAgo = n => { const d = new Date(); d.setDate(d.getDate() - n); return 
 const nice = d => new Date(d + 'T12:00:00').toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
 const uid = () => Math.random().toString(36).slice(2, 9);
 
-const fresh = () => ({ started: false, name: '', mode: 'patient', readings: [], journey: [], visits: [], pro: null, free: false, state: '', hideSms: true, research: false });
+const fresh = () => ({ started: false, name: '', mode: 'patient', readings: [], journey: [], visits: [], pro: null, free: false, state: 'FL', hideSms: true, research: false });
 let S, saved = true;
 try { S = JSON.parse(localStorage.getItem(KEY)); } catch (e) { S = null; }
 if (!S || typeof S !== 'object') S = fresh();
+if (!S.state) S.state = 'FL';
 function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); saved = true; } catch (e) { saved = false; } }
 let R = { tab: 'home', sub: null, d: {} };
 function go(tab, sub, d) { R = { tab, sub: sub || null, d: d || {} }; draw(); window.scrollTo(0, 0); }
 function event(kind, title) { S.journey.push({ id: uid(), kind, title, date: today() }); }
 
 const PROS = [
-  { id: 'an', name: 'Dr. Amara N.', role: 'General practitioner', type: 'gp', langs: 'English, French', st: ['VA','MD','DC','NY'], free: true, c: 'sky', helps: 'Fever and infections, blood pressure, lab results' },
+  { id: 'an', name: 'Dr. Amara N.', role: 'General practitioner', type: 'gp', langs: 'English, French', st: ['FL','VA','MD','DC','NY'], free: true, c: 'sky', helps: 'Fever and infections, blood pressure, lab results' },
   { id: 'ls', name: 'Lindiwe S.', role: 'Registered nurse', type: 'nurse', langs: 'English, Spanish', st: ['VA','MD','DC','TX','FL'], free: true, c: 'sage', helps: 'Wound care, medicines, child health questions' },
-  { id: 'fk', name: 'Fatima K.', role: 'Nutritionist', type: 'nutrition', langs: 'English, Swahili', st: ['VA','DC','CA'], free: true, c: 'clay', helps: 'Healthy eating, weight, diabetes diet' },
+  { id: 'fk', name: 'Fatima K.', role: 'Nutritionist', type: 'nutrition', langs: 'English, Swahili', st: ['FL','VA','DC','CA'], free: true, c: 'clay', helps: 'Healthy eating, weight, diabetes diet' },
   { id: 'rp', name: 'Dr. Rahul P.', role: 'Paediatrician', type: 'specialist', langs: 'English, Hindi', st: ['CA','TX','NY','NJ'], free: true, c: 'sand', helps: 'Babies, children and teenagers' },
-  { id: 'jm', name: 'Dr. Jean M.', role: 'Cardiologist', type: 'specialist', langs: 'English, French', st: ['VA','MD','PA'], free: false, c: 'sky', helps: 'Heart health, blood pressure, chest symptoms' },
+  { id: 'jm', name: 'Dr. Jean M.', role: 'Cardiologist', type: 'specialist', langs: 'English, French', st: ['FL','VA','MD','PA'], free: false, c: 'sky', helps: 'Heart health, blood pressure, chest symptoms' },
   { id: 'mo', name: 'Maria O.', role: 'Therapist', type: 'mental', langs: 'Spanish, English', st: ['FL','TX','CA','VA'], free: false, c: 'sage', helps: 'Stress, sleep, low mood, anxiety' }
 ];
 const STATES = 'AL AK AZ AR CA CO CT DE DC FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY'.split(' ');
@@ -222,10 +223,10 @@ function proPage() {
 }
 
 function requestPage() {
-  const p = pro(R.d.id), d = R.d; d.mode = d.mode || 'Video'; d.pay = d.pay || 'Card'; if (d.share == null) d.share = true;
+  const p = pro(R.d.id), d = R.d; const videoOnly = S.state === 'FL'; d.mode = videoOnly ? 'Video' : (d.mode || 'Video'); d.pay = d.pay || 'Card'; if (d.share == null) d.share = true;
   const seg = (key, list) => `<div class="chips">${list.map(x => `<button class="chip${d[key] === x ? ' on' : ''}" style="background:${d[key] === x ? '' : 'var(--ground)'}" data-act="req" data-k="${key}" data-v="${x}">${x}</button>`).join('')}</div>`;
   return `${back('care', 'pro:' + p.id)}<h1>Request a visit with ${p.name}</h1>
-  <div class="card"><div class="label">How would you like to meet?</div>${seg('mode', ['Video', 'Audio', 'Chat'])}<p class="muted small">If your signal is weak, the visit moves to audio or chat.</p></div>
+  <div class="card"><div class="label">How would you like to meet?</div>${seg('mode', videoOnly ? ['Video'] : ['Video', 'Audio', 'Chat'])}<p class="muted small">${videoOnly ? 'Visits for patients in Florida are by video only, because Florida does not count audio only calls or messages as telehealth.' : 'If your signal is weak, the visit moves to audio or chat.'}</p></div>
   <div class="card"><div class="label">How would you like to pay?</div>${seg('pay', ['Card', 'Insurance', 'HSA or FSA', 'A sponsor pays'])}<div class="row"><span class="grow">Visit fee</span><b>[FEE]</b></div></div>
   <div class="card"><div class="row"><div class="grow"><h3>Share my readings for this visit</h3><p class="muted small">${S.readings.length} readings. Access ends when the visit ends.</p></div><button class="chip${d.share ? ' on' : ''}" style="background:${d.share ? '' : 'var(--ground)'}" data-act="req" data-k="share" data-v="toggle">${d.share ? 'On' : 'Off'}</button></div></div>
   <div class="card"><label>Which state are you in right now?${stateSelect('st2', S.state)}</label>${S.state && !p.st.includes(S.state) ? `<p class="small" style="color:var(--alert)">${p.name} is not licensed in ${S.state}, so this visit cannot be requested.</p>` : ''}</div>
@@ -302,7 +303,7 @@ function me() {
 
 /* Open questions for the product owner. Each one is a placeholder in the product until it is answered. */
 const OPEN = [
-  ['Product', 'Final brand name, tagline and logo'], ['Product', 'First launch states (the prototype assumes any state)'], ['Product', 'Launch date and pilot partners'], ['Product', 'Languages at launch (the app is English only today)'],
+  ['Product', 'Final brand name, tagline and logo'], ['Product', 'First launch state (the prototype defaults to Florida, pending a lawyer)'], ['Product', 'Launch date and pilot partners'], ['Product', 'Languages at launch (the app is English only today)'],
   ['Clinical', 'Name of the clinical lead who approves all medical content'], ['Clinical', 'Review of the symptom guidance rules'], ['Clinical', 'Review of the reading thresholds for blood pressure, pulse and temperature'], ['Clinical', 'Which professions can join at launch'], ['Clinical', 'Prescribing scope, including whether any controlled medicines are allowed'], ['Clinical', 'Emergency and crisis policy'],
   ['Legal', 'Company structure for clinical care in each state (management company and physician owned practice)'], ['Legal', 'HIPAA privacy notice, security program and vendor agreements'], ['Legal', 'Terms of use and telehealth consent wording'], ['Legal', 'Malpractice and platform liability insurance'], ['Legal', 'FDA position on the symptom check and the explanations'], ['Legal', 'State health privacy laws that apply'],
   ['Money', 'Visit fee, shown as [FEE]'], ['Money', 'Clinician payout share, shown as [AMOUNT]'], ['Money', 'Payment provider, and whether insurance is accepted at launch'], ['Money', 'Funding plan and investor figures on the website'],
@@ -361,6 +362,7 @@ const ACT = {
   req(v, b) { const k = b.dataset.k; R.d[k] = v === 'toggle' ? !R.d[k] : v; draw(); },
   sendreq() {
     if (!S.state || !pro(R.d.id).st.includes(S.state)) { $('reqerr').textContent = S.state ? 'Choose a practitioner licensed in your state.' : 'Choose the state you are in first.'; return; }
+    if (S.state === 'FL') R.d.mode = 'Video';
     const v = { id: uid(), pro: R.d.id, mode: R.d.mode, pay: R.d.pay, share: R.d.share, status: 'requested', date: today(), code: 'PX ' + Math.floor(10 + Math.random() * 90) + ' ' + Math.floor(10 + Math.random() * 90) + ' ' + Math.floor(10 + Math.random() * 90), chat: [] };
     S.visits.push(v); event('visit', 'Requested a ' + v.mode.toLowerCase() + ' visit with ' + pro(v.pro).name); save(); go('care', 'visit', { id: v.id });
   },

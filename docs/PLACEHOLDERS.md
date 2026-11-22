@@ -4,7 +4,7 @@ Each item is a placeholder in the prototype, the website or the documents until 
 
 ## Product
 - [ ] Final brand name, tagline and logo
-- [ ] First launch states (the prototype assumes any state)
+- [ ] First launch state (the prototype defaults to Florida, pending a lawyer)
 - [ ] Launch date and pilot partners
 - [ ] Languages at launch (the app is English only; the website has 12 of 37 languages partly translated and unreviewed)
 
