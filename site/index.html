@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PulseAI Global</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout idea: one calm column of soft white panels on a pearl ground; depth from shadow only, no rules or borders. Single light theme by choice. */
+:root{
+  color-scheme: light;
+  --ground:#F6F1EA; --panel:#FFFFFF; --ink:#1E1814; --muted:#5E554D; --accent:#1A5FD6; --accent-soft:#E3ECFB; --night:#1E1814; --night-panel:#2E2622; --night-muted:#D2C7BD; --sand:#EADCC8; --sage:#D2DFCB; --clay:#EFCDB9; --sky:#CCDDEC; --label:#A6471F; --good:#0F5B34; --good-soft:#DDF3E6;
+  --display:"Plus Jakarta Sans","Segoe UI",system-ui,sans-serif; --body:"Plus Jakarta Sans","Segoe UI",system-ui,sans-serif;
+  --shadow:0 20px 60px rgba(30,24,20,.06); --shadow-lg:0 40px 100px rgba(30,24,20,.12);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:19px;line-height:1.6}
+h1,h2,h3{font-family:var(--display);font-weight:700;letter-spacing:-.03em;margin:0;text-wrap:balance}
+h1{font-size:clamp(46px,6.6vw,92px);line-height:1.03;letter-spacing:-.04em}
+h2{font-size:clamp(34px,4.4vw,58px);line-height:1.08}
+h3{font-size:26px;line-height:1.2;letter-spacing:-.02em}
+p{margin:0}
+a{color:var(--ink);text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.wrap{max-width:1200px;margin:0 auto;padding:0 clamp(18px,4vw,32px)}
+section{padding-bottom:clamp(72px,9vw,120px)}
+.muted{color:var(--muted)}
+.eyebrow{font-size:16px;font-weight:700;color:var(--label)}
+.btn{min-height:62px;padding:0 34px;border-radius:31px;font-size:19px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:10px;transition:transform .2s ease,box-shadow .2s ease,background .2s ease}
+.btn:hover{transform:translateY(-2px)}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 14px 34px rgba(26,95,214,.28)}
+.btn-dark{background:var(--ink);color:#fff}
+.btn-light{background:var(--panel);color:var(--ink);box-shadow:var(--shadow)}
+.pill{min-height:48px;padding:0 20px;border-radius:24px;background:var(--panel);font-size:17px;font-weight:600;color:var(--ink);display:inline-flex;align-items:center;transition:background .2s,color .2s,transform .2s}
+.pill:hover{transform:translateY(-1px)}
+.pill.on{background:var(--ink);color:#fff}
+.panel{background:var(--panel);border-radius:40px;padding:clamp(28px,5vw,72px);box-shadow:var(--shadow)}
+.rise{animation:rise .7s ease both}
+@keyframes rise{from{transform:translateY(14px)}to{transform:none}}
+@keyframes fade{from{opacity:.2;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+
+header{padding:22px 0}
+.bar{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:26px;letter-spacing:-.02em}
+.logo span{color:var(--accent)}
+nav{display:flex;flex-wrap:wrap;gap:6px}
+nav a{min-height:48px;padding:0 16px;border-radius:24px;display:inline-flex;align-items:center;font-size:17px;font-weight:500}
+nav a:hover{background:var(--panel)}
+.bar-actions{display:flex;gap:10px;align-items:center}
+.lang-btn{min-height:52px;padding:0 18px;border-radius:26px;background:var(--panel);font-size:17px;font-weight:600;color:var(--ink);display:inline-flex;align-items:center;gap:8px;box-shadow:var(--shadow)}
+
+.hero{display:flex;flex-wrap:wrap;gap:56px;align-items:center;padding-top:clamp(28px,5vw,64px)}
+.hero-copy{flex:999 1 480px;min-width:0;display:flex;flex-direction:column;gap:26px;align-items:flex-start}
+.hero-copy .sub{font-size:clamp(20px,2vw,24px);line-height:1.5;color:var(--muted);max-width:600px}
+.cta-row{display:flex;flex-wrap:wrap;gap:14px}
+.trust{display:flex;flex-wrap:wrap;gap:10px 26px;font-size:17px;font-weight:500;color:var(--muted)}
+.demo{flex:1 1 340px;display:flex;justify-content:center}
+.phone{width:min(360px,100%);border-radius:48px;background:var(--panel);padding:30px 26px 26px;box-shadow:var(--shadow-lg);display:flex;flex-direction:column;gap:16px}
+.big-num{font-family:var(--display);font-weight:700;font-size:60px;letter-spacing:-.04em;line-height:1}
+.tag{display:inline-flex;align-self:flex-start;padding:7px 14px;border-radius:16px;background:#FFF3DC;color:#7A4B00;font-size:15px;font-weight:600}
+.range{position:relative;height:14px;border-radius:7px;background:#EDEFF3}
+.range i{position:absolute;left:40%;width:40%;top:0;bottom:0;border-radius:7px;background:#BFE5CF}
+.range b{position:absolute;left:32%;top:-4px;width:22px;height:22px;border-radius:11px;background:var(--ink)}
+.q{width:100%;text-align:left;min-height:52px;padding:12px 18px;border-radius:18px;background:var(--ground);font-size:17px;font-weight:500;color:var(--ink);transition:background .2s}
+.q:hover,.q.on{background:var(--accent-soft)}
+.answer{font-size:17px;line-height:1.55;color:#2A3342;animation:fade .4s ease}
+
+.steps{display:flex;flex-wrap:wrap;gap:24px;margin-top:44px}
+.step-list{flex:1 1 300px;display:flex;flex-direction:column;gap:10px}
+.step-btn{text-align:left;min-height:68px;padding:14px 22px;border-radius:24px;background:transparent;font-size:20px;font-weight:600;color:var(--muted);display:flex;align-items:center;gap:16px;transition:background .25s,color .25s}
+.step-btn .n{width:16px;height:16px;border-radius:8px;background:var(--panel);display:flex;align-items:center;justify-content:center;flex:none;color:var(--ink)}
+.step-btn:hover{background:rgba(255,255,255,.6)}
+.step-btn.on{background:var(--panel);color:var(--ink);box-shadow:var(--shadow)}
+.step-btn.on .n{background:var(--accent);color:#fff}
+.step-view{flex:2 1 460px;min-width:0;background:var(--panel);border-radius:40px;padding:clamp(28px,4vw,56px);box-shadow:var(--shadow);display:flex;flex-direction:column;gap:20px;min-height:380px}
+.step-view>*{animation:fade .45s ease}
+.step-view p{font-size:21px;color:var(--muted);max-width:56ch}
+.checks{display:flex;flex-direction:column;gap:12px;list-style:none;padding:0;margin:0;font-size:19px;font-weight:500}
+.checks li{display:flex;gap:12px;align-items:flex-start}
+.checks svg{flex:none;margin-top:5px}
+
+.split{display:flex;flex-wrap:wrap;gap:48px;align-items:center}
+.split>div{flex:1 1 380px;min-width:0}
+.stack{display:flex;flex-direction:column;gap:18px}
+.chat{display:flex;flex-direction:column;gap:14px}
+.me{align-self:flex-end;max-width:88%;padding:16px 22px;border-radius:26px 26px 8px 26px;background:var(--ink);color:#fff;font-size:19px;animation:fade .35s ease}
+.ai{align-self:flex-start;max-width:94%;padding:18px 24px;border-radius:26px 26px 26px 8px;background:var(--ground);font-size:19px;color:#1E2633;animation:fade .45s ease}
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chips .pill{background:var(--ground)}
+.chips .pill.on{background:var(--ink)}
+
+.four{display:flex;flex-wrap:wrap;gap:44px 36px;margin-top:52px}
+.four>div{flex:1 1 230px;display:flex;flex-direction:column;gap:10px}
+.four .num{font-family:var(--display);font-weight:600;font-size:60px;letter-spacing:-.04em;color:var(--accent);line-height:1}
+.langs{display:flex;flex-wrap:wrap;gap:10px;margin-top:44px}
+.langs .pill small{font-size:13px;font-weight:600;color:var(--muted);margin-left:8px}
+.langs .pill.on small{color:var(--night-muted)}
+
+.roles{display:flex;flex-wrap:wrap;gap:10px}
+.roles span{padding:10px 18px;border-radius:22px;background:var(--ground);font-size:17px;font-weight:600}
+.cards{display:flex;flex-wrap:wrap;gap:18px}
+.cards>div{flex:1 1 240px;border-radius:30px;padding:30px;display:flex;flex-direction:column;gap:10px}
+.soft>div{background:var(--ground)}
+.night{background:var(--night);color:#fff;box-shadow:none}
+.night .cards>div{background:var(--night-panel)}
+.night p{color:var(--night-muted)}
+.night h3{font-size:22px}
+footer{padding:0 0 56px;font-size:16px;color:var(--muted)}
+footer .wrap{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between}
+
+/* Start flow */
+.flow{position:fixed;inset:0;z-index:20;background:var(--ground);overflow:auto;display:none}
+.flow.open{display:block;animation:fade .3s ease}
+.flow-in{max-width:820px;margin:0 auto;padding:22px clamp(18px,4vw,32px) 48px;display:flex;flex-direction:column;gap:30px;min-height:100%}
+.flow-top{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.dots{display:flex;gap:8px}
+.dots i{width:44px;height:8px;border-radius:4px;background:#DDE1E8;transition:background .3s}
+.dots i.on{background:var(--accent)}
+.x{width:52px;height:52px;border-radius:26px;background:var(--panel);display:flex;align-items:center;justify-content:center;color:var(--ink)}
+.flow h2{font-size:clamp(36px,5.4vw,60px)}
+.flow .lead{font-size:22px;color:var(--muted)}
+.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+.opts.wide{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.opt{text-align:left;min-height:84px;padding:18px 24px;border-radius:28px;background:var(--panel);color:var(--ink);font-size:21px;font-weight:600;display:flex;flex-direction:column;justify-content:center;gap:4px;box-shadow:var(--shadow);transition:transform .2s,background .2s,color .2s}
+.opt:hover{transform:translateY(-3px)}
+.opt small{font-size:16px;font-weight:500;color:var(--muted)}
+.opt.on{background:var(--ink);color:#fff}
+.opt.on small{color:var(--night-muted)}
+.opt.tall{min-height:150px;font-size:26px;font-family:var(--display);letter-spacing:-.02em}
+.search{width:100%;height:64px;border-radius:32px;border:none;background:var(--panel);padding:0 26px;font:500 20px var(--body);color:var(--ink);box-shadow:var(--shadow)}
+.flow-nav{display:flex;gap:12px;justify-content:space-between;margin-top:auto;padding-top:10px}
+.btn[disabled]{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.note{padding:16px 22px;border-radius:22px;background:var(--accent-soft);color:#0B3F99;font-size:17px;font-weight:500}
+.summary{display:flex;flex-direction:column;gap:12px}
+.summary div{background:var(--panel);border-radius:24px;padding:20px 24px;display:flex;justify-content:space-between;gap:16px;font-size:20px;box-shadow:var(--shadow)}
+.summary span{color:var(--muted)}
+.summary strong{font-weight:600;text-align:right}
+[dir="rtl"] .opt,[dir="rtl"] .step-btn,[dir="rtl"] .q{text-align:right}
+
+.h1b{display:block;font-size:.5em;line-height:1.18;letter-spacing:-.02em;color:var(--muted);margin-top:16px;font-weight:600}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;margin-top:40px}
+.tile{position:relative;overflow:hidden;text-align:left;min-height:210px;border-radius:34px;padding:28px;color:var(--ink);display:flex;flex-direction:column;justify-content:space-between;gap:20px;transition:transform .25s ease,box-shadow .25s ease}
+.tile:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg)}
+.tile strong{font-family:var(--display);font-size:28px;font-weight:700;letter-spacing:-.03em;line-height:1.1;max-width:9em}
+.tile span{font-size:17px;font-weight:600;display:inline-flex;align-items:center;gap:8px}
+.tile svg.art{position:absolute;right:-14px;bottom:-14px;opacity:.9}
+.tile.dark{background:var(--ink);color:#fff}
+.phones{display:flex;flex-wrap:wrap;gap:28px;justify-content:center;margin-top:48px}
+.device{width:300px;max-width:100%;border-radius:48px;background:var(--ink);padding:12px;box-shadow:var(--shadow-lg);transition:transform .3s ease}
+.device:hover{transform:translateY(-8px)}
+.device:nth-child(2){margin-top:36px}
+.screen{border-radius:38px;background:#fff;min-height:540px;padding:26px 20px 22px;display:flex;flex-direction:column;gap:14px}
+.screen h4{font-family:var(--display);font-size:22px;font-weight:700;letter-spacing:-.02em;margin:0}
+.screen small{font-size:14px;color:var(--muted);font-weight:500}
+.mini{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.mini div{border-radius:18px;background:var(--ground);padding:12px 10px;font-size:13px;color:var(--muted);font-weight:500}
+.mini b{display:block;font-size:18px;color:var(--ink);font-family:var(--display)}
+.map{position:relative;display:flex;flex-direction:column;gap:14px;padding-left:36px}
+.map:before{content:"";position:absolute;left:9px;top:8px;bottom:8px;width:8px;border-radius:4px;background:var(--sand)}
+.map div{position:relative;border-radius:20px;background:var(--ground);padding:12px 16px;font-size:16px;font-weight:600}
+.map div small{display:block}
+.map div:before{content:"";position:absolute;left:-35px;top:50%;width:24px;height:24px;margin-top:-12px;border-radius:12px;background:var(--good)}
+.map div.now{background:var(--ink);color:#fff}.map div.now small{color:var(--night-muted)}
+.map div.now:before{background:var(--accent);box-shadow:0 0 0 6px var(--accent-soft)}
+.map div.later:before{background:#fff;box-shadow:inset 0 0 0 5px var(--sand)}
+.stat{flex:1 1 220px;border-radius:32px;padding:30px;display:flex;flex-direction:column;gap:6px}
+.stat b{font-family:var(--display);font-size:clamp(26px,3vw,38px);font-weight:800;letter-spacing:-.03em}
+.inv-hero{border-radius:44px;background:var(--ink);color:#fff;padding:clamp(36px,7vw,96px);display:flex;flex-direction:column;gap:26px;align-items:flex-start}
+.inv-hero p{color:var(--night-muted);font-size:clamp(20px,2vw,24px);max-width:640px}
+.rows{display:flex;flex-direction:column;gap:12px}
+.rows>div{background:var(--panel);border-radius:26px;padding:22px 26px;display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between;align-items:center;font-size:19px;font-weight:600;box-shadow:var(--shadow)}
+.rows small{font-size:16px;color:var(--muted);font-weight:500}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <a class="logo" href="#top" aria-label="PulseAI home">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#1A5FD6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l2-5 4 10 2-5h6"></path></svg>
+      Pulse<span>AI</span>
+    </a>
+    <nav aria-label="Main">
+      <a href="#care">How it works</a>
+      <a href="#wellness">Wellness</a>
+      <a href="#understand">Understand</a>
+      <a href="#clinicians">For clinicians</a>
+      <a href="#security">Security</a>
+      <a href="#investors">Investors</a>
+    </nav>
+    <div class="bar-actions">
+      <button class="lang-btn" id="langBtn" type="button" aria-label="Change language">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"></path></svg>
+        <span id="langName">English</span>
+      </button>
+      <button class="btn btn-dark" type="button" data-start data-i18n="cta" style="min-height:52px;padding:0 24px;font-size:17px">Start free</button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+<section>
+  <div class="wrap hero">
+    <div class="hero-copy rise">
+      <div class="pill" style="color:var(--label);box-shadow:var(--shadow)">Launching first in the United States</div>
+      <h1><span data-i18n="h1">Understand your health, your way</span><span class="h1b" data-i18n="h1b">Through clear analytics and journey maps of your care</span></h1>
+      <p class="sub" data-i18n="sub">PulseAI puts together your health records and your numbers, and connects you with real clinicians, all in one place. It gives you clear answers in any language, wherever you are.</p>
+      <div class="cta-row">
+        <button class="btn btn-primary" type="button" data-start data-i18n="cta">Start free</button>
+        <a class="btn btn-light" href="#care" data-i18n="how">See how it works</a>
+      </div>
+      <div class="trust"><span>Verified clinicians</span><span>37 languages planned</span><span>Works offline</span><span>Licensed in your state</span></div>
+    </div>
+    <div class="demo rise">
+      <div class="phone">
+        <div>
+          <div class="muted" style="font-size:16px;font-weight:500">Full blood count, 12 Nov</div>
+          <h3 style="margin-top:4px">Haemoglobin</h3>
+        </div>
+        <div style="display:flex;align-items:baseline;gap:10px"><span class="big-num">11.2</span><span class="muted" style="font-size:18px">g/dL</span></div>
+        <span class="tag">A little low</span>
+        <div class="range" aria-hidden="true"><i></i><b></b></div>
+        <p class="answer" id="cardAnswer">This is the part of your blood that carries oxygen. Yours is slightly below the usual level, which can make you feel tired.</p>
+        <div class="stack" style="gap:8px" id="cardQs"></div>
+        <button class="btn btn-dark" type="button" data-start="patient" style="min-height:54px;font-size:17px">Talk to a clinician</button>
+        <div class="muted" style="font-size:14px;text-align:center">Example result. Tap a question to try it.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="start">
+  <div class="wrap">
+    <h2 style="max-width:760px">Care that starts with you. What do you need today?</h2>
+    <div class="tiles"><button type="button" class="tile" data-start="patient" style="background:var(--sand)"><strong>Check my symptoms</strong><span>Get started <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span><svg class="art" width="130" height="130" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3M11 8v6M8 11h6"></path></svg></button><button type="button" class="tile" data-start="patient" style="background:var(--sage)"><strong>Talk to a clinician</strong><span>Get started <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span><svg class="art" width="130" height="130" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="14" height="12" rx="3"></rect><path d="M16 10l6-3v10l-6-3"></path></svg></button><button type="button" class="tile" data-start="patient" style="background:var(--sky)"><strong>Understand my results</strong><span>Get started <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span><svg class="art" width="130" height="130" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h16M7 16V9M12 16V5M17 16v-4"></path></svg></button><button type="button" class="tile" data-start="patient" style="background:var(--clay)"><strong>Map my care journey</strong><span>Get started <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span><svg class="art" width="130" height="130" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="18" r="2.5"></circle><circle cx="18" cy="6" r="2.5"></circle><path d="M8.5 18H14a4 4 0 0 0 0-8h-4a4 4 0 0 1 0-8h5.5" transform="translate(0 2)"></path></svg></button><button type="button" class="tile" data-start="patient" style="background:var(--sand)"><strong>Keep my records safe</strong><span>Get started <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span><svg class="art" width="130" height="130" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"></path><path d="M8.5 12l2.5 2.5 4.5-5"></path></svg></button><button type="button" class="tile" data-start="wellness" style="background:var(--sage)"><strong>Stay well and prevent illness</strong><span>Get started <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span><svg class="art" width="130" height="130" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10z"></path></svg></button><button type="button" class="tile dark" data-start="pro"><strong>Join as a clinician</strong><span>Get started <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span><svg class="art" width="130" height="130" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"></path></svg></button></div>
+  </div>
+</section>
+
+<section id="app">
+  <div class="wrap">
+    <div class="eyebrow">In your pocket</div>
+    <h2 style="max-width:820px;margin-top:12px">See your health as a story, with numbers you can read and a map of where you are</h2>
+    <div class="phones">
+      <div class="device"><div class="screen">
+        <small>Analytics</small><h4>Blood pressure, 30 days</h4>
+        <div style="display:flex;align-items:baseline;gap:8px"><span class="big-num" style="font-size:46px">124/80</span></div>
+        <span class="tag" style="background:var(--good-soft);color:var(--good)">Trending down</span>
+        <svg viewBox="0 0 260 120" role="img" aria-label="Blood pressure trend falling over 30 days" style="width:100%"><path d="M0 34 C40 30 60 48 95 44 S150 70 185 66 S235 84 260 80 L260 120 L0 120 Z" fill="#E3ECFB"></path><path d="M0 34 C40 30 60 48 95 44 S150 70 185 66 S235 84 260 80" fill="none" stroke="#1A5FD6" stroke-width="4" stroke-linecap="round"></path><circle cx="260" cy="80" r="7" fill="#1A5FD6"></circle></svg>
+        <p style="font-size:15px;line-height:1.5;color:#3d3530">Your readings have eased over the month. Keep taking them in the morning so we compare like with like.</p>
+        <div class="mini"><div><b>7h 10</b>Sleep</div><div><b>6,240</b>Steps</div><div><b>68</b>Resting pulse</div></div>
+      </div></div>
+      <div class="device"><div class="screen">
+        <small>Journey map</small><h4>My care journey</h4>
+        <div class="map">
+          <div>Symptom check<small>Monday</small></div>
+          <div>Video visit with Dr. Amara<small>Tuesday</small></div>
+          <div>Blood test at partner lab<small>Thursday</small></div>
+          <div class="now">Results explained<small>Today. You are here.</small></div>
+          <div class="later">Follow up visit<small>Next week</small></div>
+          <div class="later">Repeat test<small>In 3 months</small></div>
+        </div>
+      </div></div>
+      <div class="device"><div class="screen">
+        <small>Find care</small><h4>Free right now</h4>
+        <div style="border-radius:24px;background:var(--ground);padding:16px;display:flex;gap:12px;align-items:center"><div style="width:52px;height:52px;border-radius:26px;background:var(--sky);display:flex;align-items:center;justify-content:center;font-weight:800">AN</div><div><div style="font-weight:700;font-size:16px">Dr. Amara N.</div><small>General practitioner. Verified.</small></div></div>
+        <div style="border-radius:24px;background:var(--ground);padding:16px;display:flex;gap:12px;align-items:center"><div style="width:52px;height:52px;border-radius:26px;background:var(--clay);display:flex;align-items:center;justify-content:center;font-weight:800">FK</div><div><div style="font-weight:700;font-size:16px">Fatima K.</div><small>Nutritionist. Verified.</small></div></div>
+        <div style="border-radius:24px;background:var(--ground);padding:16px;display:flex;gap:12px;align-items:center"><div style="width:52px;height:52px;border-radius:26px;background:var(--sage);display:flex;align-items:center;justify-content:center;font-weight:800">JM</div><div><div style="font-weight:700;font-size:16px">Dr. Jean M.</div><small>Cardiologist. Verified.</small></div></div>
+        <div style="flex:1"></div>
+        <button class="btn btn-dark" type="button" data-start="patient" style="min-height:54px;font-size:17px">Request a visit</button>
+      </div></div>
+    </div>
+    <p class="muted" style="font-size:15px;text-align:center;margin-top:28px">Example screens with sample data and invented practitioners.</p>
+  </div>
+</section>
+
+<section id="wellness">
+  <div class="wrap">
+    <div class="panel split" style="background:var(--sage);box-shadow:none">
+      <div class="stack">
+        <div class="eyebrow" style="color:var(--good)">Wellness and prevention</div>
+        <h2>Feeling fine? Let us keep it that way</h2>
+        <p style="font-size:21px;color:#3A4A36">You do not need to be sick to use PulseAI. Build a picture of your health while you are well, spot changes early, and get friendly guidance from nutritionists, nurses and doctors.</p>
+        <div><button class="btn btn-dark" type="button" data-start="wellness">Start my wellness plan</button></div>
+      </div>
+      <div class="stack" style="gap:14px">
+        <div style="background:#fff;border-radius:28px;padding:24px"><h3>Know your baseline</h3><p class="muted">Record your usual blood pressure, weight, sleep and lab values so a change stands out early.</p></div>
+        <div style="background:#fff;border-radius:28px;padding:24px"><h3>A prevention journey map</h3><p class="muted">Check ups, screenings and vaccines your clinician recommends, laid out as a simple timeline with reminders.</p></div>
+        <div style="background:#fff;border-radius:28px;padding:24px"><h3>Habits that hold</h3><p class="muted">Small weekly goals for food, movement, sleep and stress, with a nutritionist or coach when you want one.</p></div>
+        <div style="background:#fff;border-radius:28px;padding:24px"><h3>Family and future</h3><p class="muted">Note your family history and share it before a visit, so advice fits you and the people you care for.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="care">
+  <div class="wrap">
+    <div class="eyebrow">How it works</div>
+    <h2 style="max-width:800px;margin-top:12px">One app for the whole journey, from first worry to feeling better</h2>
+    <div class="steps">
+      <div class="step-list" id="stepList" role="tablist" aria-label="Steps of care"></div>
+      <div class="step-view" id="stepView" role="tabpanel"></div>
+    </div>
+  </div>
+</section>
+
+<section id="understand">
+  <div class="wrap">
+    <div class="panel split">
+      <div class="stack">
+        <div class="eyebrow">The Understand space</div>
+        <h2>Easy to understand explanations of your results</h2>
+        <p class="muted" style="font-size:21px">PulseAI reads your numbers and explains them the way a patient friend would: what the test measures, what your result means, what usually causes it and what to do next.</p>
+        <p style="font-size:17px;font-weight:600">Try a question</p>
+        <div class="chips" id="chatChips"></div>
+      </div>
+      <div class="stack">
+        <div class="chat" id="chat" aria-live="polite"></div>
+        <div class="muted" style="font-size:15px;font-weight:500">Example answers. Reviewed by clinicians. Guidance, not a diagnosis.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="global">
+  <div class="wrap">
+    <div class="eyebrow">Built for the whole world</div>
+    <h2 style="max-width:760px;margin-top:12px">Care that fits real life, in every part of the world</h2>
+    <div class="four">
+      <div><h3>Your language</h3><p class="muted">Read, type or speak in the language you think in. Live captions translate during a visit.</p></div>
+      <div><h3>Offline first</h3><p class="muted">Records and prescriptions open without a connection and sync quietly when you are back online.</p></div>
+      <div><h3>Light on data</h3><p class="muted">Visits move from video to audio to text as your signal changes, so care never drops.</p></div>
+      <div><h3>Local payments</h3><p class="muted">Cards, HSA and FSA cards, insurance and sponsor pay links in the United States, with mobile money planned for later markets.</p></div>
+    </div>
+    <p style="font-size:17px;font-weight:600;margin-top:56px">Choose a language to see the site change</p>
+    <div class="langs" id="langCloud" style="margin-top:16px"></div>
+    <p class="muted" id="langNote" style="font-size:16px;margin-top:16px" aria-live="polite"></p>
+  </div>
+</section>
+
+<section id="clinicians">
+  <div class="wrap">
+    <div class="panel stack" style="gap:32px">
+      <div class="split" style="align-items:flex-start">
+        <div class="stack">
+          <div class="eyebrow">For health professionals</div>
+          <h2>Share your expertise whenever you are free</h2>
+          <p class="muted" style="font-size:21px">Create a verified profile, switch yourself to free, and patients who need your skills can request you. You are paid for every visit.</p>
+          <div><button class="btn btn-primary" type="button" data-start="pro">Apply as a practitioner</button></div>
+        </div>
+        <div class="stack">
+          <p style="font-size:17px;font-weight:600">Open to</p>
+          <div class="roles"><span>Specialist doctors</span><span>General practitioners</span><span>Nurses</span><span>Midwives</span><span>Nutritionists</span><span>Pharmacists</span><span>Therapists</span><span>Other medical experts</span></div>
+        </div>
+      </div>
+      <div class="cards soft">
+        <div><h3>Verified once, trusted everywhere</h3><p class="muted">Identity, licence and training are checked by our medical team before your badge goes live.</p></div>
+        <div><h3>Work on your own hours</h3><p class="muted">One switch says you are free now. Set weekly hours or take requests as they come.</p></div>
+        <div><h3>Paid to bank or mobile money</h3><p class="muted">See each fee before you accept. Payouts arrive on a regular schedule.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="security">
+  <div class="wrap">
+    <div class="panel night stack" style="gap:40px">
+      <h2 style="max-width:700px">Your health data belongs to you. Always</h2>
+      <div class="cards">
+        <div><h3>Encrypted everywhere</h3><p>Protected on your phone and on the way to your clinician.</p></div>
+        <div><h3>You choose who sees</h3><p>Share a record for one visit and remove access in one tap.</p></div>
+        <div><h3>Private by default</h3><p>App lock, hidden health details in messages, and no data sharing unless you opt in.</p></div>
+        <div><h3>Yours to take or delete</h3><p>Download everything or close your account whenever you wish.</p></div>
+      </div>
+      <p style="font-size:16px">[COMPLIANCE STATEMENT, TO BE VERIFIED BY LEGAL]</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap stack" style="align-items:center;text-align:center;gap:24px">
+    <h2 style="font-size:clamp(40px,5.6vw,76px);letter-spacing:-.04em">Feel safe, informed and well</h2>
+    <p class="muted" style="font-size:22px">Free to start. Visits from [YOUR PRICE].</p>
+    <div class="cta-row" style="justify-content:center">
+      <button class="btn btn-primary" type="button" data-start data-i18n="cta">Start free</button>
+      <button class="btn btn-light" type="button" data-start="pro">I am a health professional</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<main id="investorsView" hidden>
+<section>
+  <div class="wrap" style="padding-top:clamp(12px,3vw,32px)">
+    <div class="inv-hero rise">
+      <div class="eyebrow" style="color:#F2B796">Investor relations</div>
+      <h1 style="font-size:clamp(40px,5.6vw,80px)">Helping the world understand its health</h1>
+      <p>PulseAI is building one place where anyone can read their own health data, follow their care journey and reach a verified clinician, in their language and on any connection.</p>
+      <div class="cta-row"><a class="btn btn-primary" href="#inv-resources">Investor materials</a><a class="btn btn-light" href="#inv-contact">Contact investor relations</a></div>
+    </div>
+  </div>
+</section>
+<section>
+  <div class="wrap">
+    <h2>PulseAI at a glance</h2>
+    <div class="cards" style="margin-top:36px">
+      <div class="stat" style="background:var(--sand)"><b>[PATIENTS]</b><span>People using PulseAI</span></div>
+      <div class="stat" style="background:var(--sage)"><b>[CLINICIANS]</b><span>Verified practitioners</span></div>
+      <div class="stat" style="background:var(--sky)"><b>[COUNTRIES]</b><span>Markets served</span></div>
+      <div class="stat" style="background:var(--clay)"><b>[STAGE]</b><span>Funding stage</span></div>
+    </div>
+    <p class="muted" style="font-size:16px;margin-top:18px">Figures to be supplied by the company. None are shown until they are verified.</p>
+  </div>
+</section>
+<section>
+  <div class="wrap">
+    <div class="panel stack" style="gap:36px">
+      <h2 style="max-width:760px">Why PulseAI</h2>
+      <div class="cards soft">
+        <div><h3>The problem</h3><p class="muted">Health records are scattered, results are written in jargon, and a trusted clinician is often far away or hard to afford.</p></div>
+        <div><h3>The product</h3><p class="muted">Plain language analytics, a journey map of each person's care, and an open marketplace of verified clinicians, in one app.</p></div>
+        <div><h3>The model</h3><p class="muted">Proposed: a share of each visit fee, optional memberships, and plans for clinics, employers and sponsors.</p></div>
+        <div><h3>The edge</h3><p class="muted">Built for many languages, weak connections and local payments from day one, with a verified practitioner database at the core.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+<section>
+  <div class="wrap">
+    <h2>Roadmap</h2>
+    <div class="rows" style="margin-top:32px">
+      <div><span>Design preview and clickable prototype</span><small>Now</small></div>
+      <div><span>Pilot with partner clinics and first verified practitioners</span><small>[DATE]</small></div>
+      <div><span>Launch in the first US states</span><small>[STATES, DATE]</small></div>
+    </div>
+  </div>
+</section>
+<section>
+  <div class="wrap split" style="align-items:flex-start">
+    <div class="stack"><h2>News</h2><div class="rows">
+      <div><span>[PRESS RELEASE TITLE]</span><small>[DATE]</small></div>
+      <div><span>[PRESS RELEASE TITLE]</span><small>[DATE]</small></div>
+    </div></div>
+    <div class="stack"><h2>Events</h2><div class="rows">
+      <div><span>[UPCOMING EVENT]</span><small>[DATE]</small></div>
+      <div><span>[LATEST PRESENTATION]</span><small>[DATE]</small></div>
+    </div></div>
+  </div>
+</section>
+<section id="inv-resources">
+  <div class="wrap">
+    <h2>Investor materials</h2>
+    <div class="rows" style="margin-top:32px">
+      <div><span>Investor presentation</span><small>[LINK TO BE ADDED]</small></div>
+      <div><span>Company fact sheet</span><small>[LINK TO BE ADDED]</small></div>
+      <div><span>Leadership and governance</span><small>[TO BE ADDED]</small></div>
+    </div>
+  </div>
+</section>
+<section id="inv-contact">
+  <div class="wrap">
+    <div class="panel night stack" style="gap:20px">
+      <h2>Talk to us</h2>
+      <p style="font-size:21px">Investor relations: [INVESTOR EMAIL]</p>
+      <p style="font-size:16px">This page is a design preview. PulseAI is described here at concept stage, and nothing on this page is an offer to sell or a solicitation to buy any security.</p>
+      <div><a class="btn btn-light" href="#top">Back to the main site</a></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer><div class="wrap"><span>PulseAI gives health guidance and is not a substitute for a diagnosis from a clinician.</span><a href="#investors" style="font-weight:600">Investors</a><span>[YEAR] PulseAI</span></div></footer>
+
+<div class="flow" id="flow" role="dialog" aria-modal="true" aria-labelledby="flowTitle">
+  <div class="flow-in">
+    <div class="flow-top">
+      <div class="dots" id="dots" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+      <button class="x" id="flowClose" type="button" aria-label="Close"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+    </div>
+    <div id="flowBody" class="stack" style="gap:26px"></div>
+    <div class="flow-nav">
+      <button class="btn btn-light" id="flowBack" type="button" data-i18n="back">Back</button>
+      <button class="btn btn-primary" id="flowNext" type="button" data-i18n="next">Continue</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var CANVAS = 'https://claude.ai/artifact/7qLqFsrjMpyMC7yUYPjppW';
+var CHECK = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1A5FD6" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg>';
+
+/* Languages. Those with text in T are translated; the rest show English until a native review is done. */
+var LANGS = [
+ ['en','English'],['fr','Français'],['es','Español'],['pt','Português'],['ar','العربية'],['sw','Kiswahili'],['hi','हिन्दी'],['zh','中文'],['de','Deutsch'],['ru','Русский'],['id','Bahasa Indonesia'],['tr','Türkçe'],
+ ['ha','Hausa'],['yo','Yorùbá'],['ig','Igbo'],['am','አማርኛ'],['ff','Fulfulde'],['bm','Bamanankan'],['wo','Wolof'],['ln','Lingála'],['zu','isiZulu'],['so','Soomaali'],['om','Afaan Oromoo'],['rw','Kinyarwanda'],['pcm','Pidgin'],
+ ['bn','বাংলা'],['ur','اردو'],['fa','فارسی'],['ta','தமிழ்'],['ja','日本語'],['ko','한국어'],['vi','Tiếng Việt'],['th','ไทย'],['tl','Filipino'],['it','Italiano'],['nl','Nederlands'],['pl','Polski']
+];
+var RTL = {ar:1,ur:1,fa:1};
+var T = {
+ en:{h1:'Understand your health, your way',h1b:'Through clear analytics and journey maps of your care',sub:'PulseAI puts together your health records and your numbers, and connects you with real clinicians, all in one place. It gives you clear answers in any language, wherever you are.',cta:'Start free',how:'See how it works',lang:'Choose your language',who:'Who are you?',patient:'I need care',pro:'I am a health professional',need:'What do you need today?',next:'Continue',back:'Back'},
+ fr:{h1:'Comprenez votre santé, à votre façon',h1b:'Grâce à des analyses claires et à des cartes de votre parcours de soins',sub:'PulseAI rassemble vos dossiers de santé et vos chiffres, et vous met en relation avec de vrais cliniciens, au même endroit. Vous recevez des réponses claires dans n’importe quelle langue, où que vous soyez.',cta:'Commencer gratuitement',how:'Voir comment ça marche',lang:'Choisissez votre langue',who:'Qui êtes-vous ?',patient:'J’ai besoin de soins',pro:'Je suis professionnel de santé',need:'De quoi avez-vous besoin aujourd’hui ?',next:'Continuer',back:'Retour'},
+ es:{h1:'Entiende tu salud, a tu manera',h1b:'Con analíticas claras y mapas de tu recorrido de atención',sub:'PulseAI reúne tus registros de salud y tus cifras, y te conecta con profesionales clínicos reales, todo en un solo lugar. Te da respuestas claras en cualquier idioma, estés donde estés.',cta:'Empezar gratis',how:'Ver cómo funciona',lang:'Elige tu idioma',who:'¿Quién eres?',patient:'Necesito atención',pro:'Soy profesional de la salud',need:'¿Qué necesitas hoy?',next:'Continuar',back:'Atrás'},
+ pt:{h1:'Entenda sua saúde, do seu jeito',h1b:'Com análises claras e mapas da sua jornada de cuidado',sub:'O PulseAI reúne seus registros de saúde e seus números e conecta você a profissionais de saúde reais, tudo em um só lugar. Você recebe respostas claras em qualquer idioma, onde quer que esteja.',cta:'Começar grátis',how:'Veja como funciona',lang:'Escolha seu idioma',who:'Quem é você?',patient:'Preciso de atendimento',pro:'Sou profissional de saúde',need:'Do que você precisa hoje?',next:'Continuar',back:'Voltar'},
+ ar:{h1:'افهم صحتك، بطريقتك',h1b:'عبر تحليلات واضحة وخرائط لرحلتك الصحية',sub:'يجمع PulseAI سجلاتك الصحية وأرقامك ويصلك بأطباء حقيقيين، كل ذلك في مكان واحد. ويقدم لك إجابات واضحة بأي لغة، أينما كنت.',cta:'ابدأ مجانًا',how:'شاهد كيف يعمل',lang:'اختر لغتك',who:'من أنت؟',patient:'أحتاج إلى رعاية',pro:'أنا مختص صحي',need:'ماذا تحتاج اليوم؟',next:'متابعة',back:'رجوع'},
+ sw:{h1:'Elewa afya yako, kwa njia yako',h1b:'Kupitia uchambuzi ulio wazi na ramani za safari yako ya huduma',sub:'PulseAI inaunganisha rekodi zako za afya na vipimo vyako, na kukuunganisha na wahudumu halisi wa afya, vyote mahali pamoja. Inakupa majibu yaliyo wazi kwa lugha yoyote, popote ulipo.',cta:'Anza bila malipo',how:'Ona jinsi inavyofanya kazi',lang:'Chagua lugha yako',who:'Wewe ni nani?',patient:'Ninahitaji huduma',pro:'Mimi ni mtaalamu wa afya',need:'Unahitaji nini leo?',next:'Endelea',back:'Rudi'},
+ hi:{h1:'अपनी सेहत को समझें, अपने तरीके से',h1b:'साफ़ विश्लेषण और आपकी देखभाल के सफ़र के नक्शों के साथ',sub:'PulseAI आपके स्वास्थ्य रिकॉर्ड और आपकी रिपोर्ट के आंकड़ों को एक जगह लाता है और आपको असली डॉक्टरों से जोड़ता है। आप जहाँ भी हों, किसी भी भाषा में साफ़ जवाब पाएँ।',cta:'मुफ़्त में शुरू करें',how:'देखें यह कैसे काम करता है',lang:'अपनी भाषा चुनें',who:'आप कौन हैं?',patient:'मुझे इलाज चाहिए',pro:'मैं स्वास्थ्य पेशेवर हूँ',need:'आज आपको क्या चाहिए?',next:'आगे बढ़ें',back:'वापस'},
+ zh:{h1:'用您自己的方式，读懂您的健康',h1b:'借助清晰的数据分析和就医旅程图',sub:'PulseAI 将您的健康记录和各项指标汇集在一处，并为您连接真正的临床医生。无论您身在何处，都能用任何语言获得清晰的解答。',cta:'免费开始',how:'了解使用方式',lang:'选择您的语言',who:'您是哪一类用户？',patient:'我需要就医',pro:'我是医疗专业人员',need:'您今天需要什么？',next:'继续',back:'返回'},
+ de:{h1:'Verstehen Sie Ihre Gesundheit, auf Ihre Art',h1b:'Mit klaren Analysen und Karten Ihres Behandlungswegs',sub:'PulseAI führt Ihre Gesundheitsakten und Ihre Werte zusammen und verbindet Sie mit echten Ärztinnen und Ärzten, alles an einem Ort. Sie erhalten klare Antworten in jeder Sprache, wo immer Sie sind.',cta:'Kostenlos starten',how:'So funktioniert es',lang:'Wählen Sie Ihre Sprache',who:'Wer sind Sie?',patient:'Ich brauche medizinische Hilfe',pro:'Ich bin medizinische Fachkraft',need:'Was brauchen Sie heute?',next:'Weiter',back:'Zurück'},
+ ru:{h1:'Поймите своё здоровье по-своему',h1b:'С помощью понятной аналитики и карт вашего пути лечения',sub:'PulseAI объединяет ваши медицинские записи и показатели и связывает вас с настоящими врачами, всё в одном месте. Вы получаете ясные ответы на любом языке, где бы вы ни были.',cta:'Начать бесплатно',how:'Как это работает',lang:'Выберите язык',who:'Кто вы?',patient:'Мне нужна помощь врача',pro:'Я медицинский специалист',need:'Что вам нужно сегодня?',next:'Далее',back:'Назад'},
+ id:{h1:'Pahami kesehatan Anda, dengan cara Anda',h1b:'Melalui analitik yang jelas dan peta perjalanan perawatan Anda',sub:'PulseAI menyatukan catatan kesehatan dan angka hasil pemeriksaan Anda, serta menghubungkan Anda dengan tenaga klinis sungguhan, semuanya di satu tempat. Anda mendapat jawaban yang jelas dalam bahasa apa pun, di mana pun Anda berada.',cta:'Mulai gratis',how:'Lihat cara kerjanya',lang:'Pilih bahasa Anda',who:'Siapa Anda?',patient:'Saya butuh layanan kesehatan',pro:'Saya tenaga kesehatan',need:'Apa yang Anda butuhkan hari ini?',next:'Lanjut',back:'Kembali'},
+ tr:{h1:'Sağlığınızı kendi yönteminizle anlayın',h1b:'Net analizler ve bakım yolculuğu haritalarıyla',sub:'PulseAI sağlık kayıtlarınızı ve değerlerinizi bir araya getirir ve sizi gerçek klinisyenlerle tek bir yerde buluşturur. Nerede olursanız olun, her dilde net yanıtlar alırsınız.',cta:'Ücretsiz başla',how:'Nasıl çalıştığını görün',lang:'Dilinizi seçin',who:'Kimsiniz?',patient:'Bakıma ihtiyacım var',pro:'Sağlık profesyoneliyim',need:'Bugün neye ihtiyacınız var?',next:'Devam',back:'Geri'}
+};
+var lang = 'en';
+function t(k){ return (T[lang] || T.en)[k] || T.en[k]; }
+function langLabel(code){ for (var i=0;i<LANGS.length;i++) if (LANGS[i][0]===code) return LANGS[i][1]; return code; }
+function el(id){ return document.getElementById(id); }
+
+function setLang(code){
+  lang = code;
+  document.documentElement.lang = T[code] ? code : 'en';
+  document.documentElement.dir = (T[code] && RTL[code]) ? 'rtl' : 'ltr';
+  var nodes = document.querySelectorAll('[data-i18n]');
+  for (var i=0;i<nodes.length;i++) nodes[i].textContent = t(nodes[i].getAttribute('data-i18n'));
+  el('langName').textContent = langLabel(code);
+  el('langNote').textContent = T[code] ? '' : 'The ' + langLabel(code) + ' translation is on the way. Showing English for now.';
+  drawLangCloud();
+  try { localStorage.setItem('pulse-lang', code); } catch (e) {}
+  if (el('flow').classList.contains('open')) drawFlow();
+}
+function langButtons(cls){
+  return LANGS.map(function(l){
+    return '<button type="button" class="'+cls+(l[0]===lang?' on':'')+'" data-lang="'+l[0]+'">'+l[1]+(T[l[0]]?'':'<small>Soon</small>')+'</button>';
+  }).join('');
+}
+function drawLangCloud(){ el('langCloud').innerHTML = langButtons('pill'); }
+el('langCloud').addEventListener('click', function(e){ var b = e.target.closest('[data-lang]'); if (b) setLang(b.getAttribute('data-lang')); });
+
+/* Hero card questions */
+var CARD = [
+ ['Should I worry?','A slightly low result is common and usually not urgent. It is worth a conversation with a clinician, who can check the cause and whether you need treatment.'],
+ ['What can cause this?','Common reasons include low iron in food, heavy periods, pregnancy or a recent infection. A clinician can find out which one applies to you.'],
+ ['What happens next?','A clinician may repeat the test, ask about your diet and symptoms, and suggest next steps. You can share this result with them in one tap.']
+];
+el('cardQs').innerHTML = CARD.map(function(c,i){ return '<button type="button" class="q" data-q="'+i+'">'+c[0]+'</button>'; }).join('');
+el('cardQs').addEventListener('click', function(e){
+  var b = e.target.closest('[data-q]'); if (!b) return;
+  var all = el('cardQs').children; for (var i=0;i<all.length;i++) all[i].classList.remove('on');
+  b.classList.add('on');
+  var a = el('cardAnswer'); a.textContent = CARD[+b.getAttribute('data-q')][1];
+  a.style.animation = 'none'; void a.offsetWidth; a.style.animation = '';
+});
+
+/* How it works */
+var STEPS = [
+ ['Check your symptoms','Answer a few simple questions by voice or text. PulseAI tells you how soon to seek care and where to go.',['Guided questions in your language','A clear result from self care to emergency','An emergency banner that is always visible']],
+ ['Find a verified clinician','Browse doctors, nurses, nutritionists and specialists who are free right now, or book for later.',['Identity and licence checked for every profile','Filter by specialty, language and price','See the fee before you request a visit']],
+ ['Meet by video, audio or chat','Video when your signal is strong. Audio or chat when it is not. Live captions translate as you speak.',['The visit adapts to your connection','You choose which records the clinician sees','Notes are saved to your records']],
+ ['Collect your medicine','A signed prescription arrives as a code on your phone. Show it at a partner pharmacy, even without internet.',['QR code and a short code that work offline','Pharmacies that have it in stock','Dose reminders by SMS']],
+ ['Keep every record','Photograph a lab report, add a file or connect a watch. Your history stays on your phone and travels with you.',['Upload a photo, a PDF or a reading','Encrypted and available offline','Share with any clinic by QR code']],
+ ['Understand and pay your way','Every result explained in everyday words. Pay by card, HSA or FSA, or insurance, or let a relative pay with one link.',['Simple and detailed explanations','Ask any question about your result','Cards, HSA or FSA, insurance or a sponsor']]
+];
+var step = 0;
+function drawSteps(){
+  el('stepList').innerHTML = STEPS.map(function(s,i){
+    return '<button type="button" role="tab" aria-selected="'+(i===step)+'" class="step-btn'+(i===step?' on':'')+'" data-step="'+i+'"><span class="n" aria-hidden="true"></span>'+s[0]+'</button>';
+  }).join('');
+  var s = STEPS[step];
+  el('stepView').innerHTML = '<h3 style="font-size:clamp(30px,3.4vw,44px)">'+s[0]+'</h3><p>'+s[1]+'</p><ul class="checks">'+s[2].map(function(c){ return '<li>'+CHECK+'<span>'+c+'</span></li>'; }).join('')+'</ul>';
+}
+el('stepList').addEventListener('click', function(e){ var b = e.target.closest('[data-step]'); if (b){ step = +b.getAttribute('data-step'); drawSteps(); } });
+
+/* Understand chat */
+var CHAT = [
+ ['My blood pressure is 128 over 84. Is that bad?','It is a little above the healthy range, and it is not an emergency. The first number is the pressure when your heart beats. The second is the pressure when it rests. One reading is only a snapshot, so let us look at your last five together.'],
+ ['What does haemoglobin mean?','Haemoglobin is the part of your blood that carries oxygen around your body. Think of it as the delivery trucks for oxygen. When it is low, you may feel tired or short of breath.'],
+ ['How do I get ready for my video visit?','Find a quiet place with good light. Keep your medicines and any lab reports nearby. If your signal is weak, PulseAI switches the visit to audio or chat so you do not lose the clinician.']
+];
+function drawChat(i){
+  el('chatChips').innerHTML = CHAT.map(function(c,n){ return '<button type="button" class="pill'+(n===i?' on':'')+'" data-chat="'+n+'">'+c[0]+'</button>'; }).join('');
+  el('chat').innerHTML = '<div class="me">'+CHAT[i][0]+'</div><div class="ai">'+CHAT[i][1]+'</div>';
+}
+el('chatChips').addEventListener('click', function(e){ var b = e.target.closest('[data-chat]'); if (b) drawChat(+b.getAttribute('data-chat')); });
+
+/* Start flow */
+var flow = { i:0, who:null, pick:null, filter:'' };
+var NEEDS = [['Check my symptoms','Guided questions, a clear next step'],['Talk to a clinician','Video, audio or chat'],['Understand a result','Plain words for your numbers'],['Store my records','Upload and keep them safe'],['Stay well and prevent illness','Baseline, check ups and healthy habits']];
+var ROLES = [['Specialist doctor',''],['General practitioner',''],['Nurse',''],['Midwife',''],['Nutritionist',''],['Pharmacist',''],['Therapist',''],['Other medical expert','']];
+function drawFlow(){
+  var dots = el('dots').children; for (var d=0;d<dots.length;d++) dots[d].className = d<=flow.i ? 'on' : '';
+  var b = el('flowBody'), next = el('flowNext'), back = el('flowBack');
+  back.style.visibility = flow.i===0 ? 'hidden' : 'visible';
+  back.textContent = t('back'); next.textContent = t('next'); next.disabled = false; next.style.display = '';
+  if (flow.i===0){
+    var q = flow.filter.toLowerCase();
+    var list = LANGS.filter(function(l){ return !q || l[1].toLowerCase().indexOf(q)>-1 || l[0].indexOf(q)===0; });
+    b.innerHTML = '<h2 id="flowTitle">'+t('lang')+'</h2><label for="langSearch" style="position:absolute;left:-9999px">Search languages</label><input class="search" id="langSearch" type="search" placeholder="Search" value="'+flow.filter.replace(/"/g,'')+'"><div class="opts">'+list.map(function(l){ return '<button type="button" class="opt'+(l[0]===lang?' on':'')+'" data-lang="'+l[0]+'">'+l[1]+(T[l[0]]?'':'<small>Translation on the way</small>')+'</button>'; }).join('')+'</div>';
+  } else if (flow.i===1){
+    b.innerHTML = '<h2 id="flowTitle">'+t('who')+'</h2><div class="opts wide"><button type="button" class="opt tall'+(flow.who==='patient'?' on':'')+'" data-who="patient">'+t('patient')+'<small>For yourself or someone you care for</small></button><button type="button" class="opt tall'+(flow.who==='pro'?' on':'')+'" data-who="pro">'+t('pro')+'<small>Doctors, nurses, nutritionists and more</small></button></div>';
+    next.disabled = !flow.who;
+  } else if (flow.i===2){
+    var items = flow.who==='pro' ? ROLES : NEEDS;
+    b.innerHTML = '<h2 id="flowTitle">'+(flow.who==='pro' ? 'What is your role?' : t('need'))+'</h2><div class="opts wide">'+items.map(function(n){ return '<button type="button" class="opt'+(flow.pick===n[0]?' on':'')+'" data-pick="'+n[0]+'">'+n[0]+(n[1]?'<small>'+n[1]+'</small>':'')+'</button>'; }).join('')+'</div>';
+    next.disabled = !flow.pick;
+  } else {
+    var pro = flow.who==='pro';
+    b.innerHTML = '<h2 id="flowTitle">'+(pro ? 'Next, we verify you' : 'You are ready to begin')+'</h2><p class="lead">'+(pro ? 'You will confirm your identity, add your licence and upload your certificates. Our medical team reviews every application.' : 'Here is what we will set up for you first.')+'</p><div class="summary"><div><span>Language</span><strong>'+langLabel(lang)+'</strong></div><div><span>'+(pro?'Role':'First step')+'</span><strong>'+flow.pick+'</strong></div></div><div class="note">This is a design preview. Accounts open at launch, and nothing you chose here has been saved or sent.</div><div class="cta-row"><a class="btn btn-primary" href="https://claude.ai/artifact/M24CAtS87k8YUVMPGdfnw5">Open the app prototype</a><button type="button" class="btn btn-light" id="flowDone">Back to the site</button></div>';
+    next.style.display = 'none';
+  }
+}
+function openFlow(who){
+  var well = who === 'wellness'; if (well) who = 'patient'; flow.i = who ? 2 : 0; flow.who = who || null; flow.pick = well ? 'Stay well and prevent illness' : null; flow.filter = '';
+  el('flow').classList.add('open'); document.body.style.overflow = 'hidden'; drawFlow(); el('flow').scrollTop = 0; el('flowClose').focus();
+}
+function closeFlow(){ el('flow').classList.remove('open'); document.body.style.overflow = ''; }
+document.addEventListener('click', function(e){
+  var s = e.target.closest('[data-start]');
+  if (s){ openFlow(s.getAttribute('data-start') || null); }
+});
+el('langBtn').addEventListener('click', function(){ openFlow(null); });
+el('flowClose').addEventListener('click', closeFlow);
+el('flow').addEventListener('keydown', function(e){ if (e.key==='Escape') closeFlow(); });
+el('flowNext').addEventListener('click', function(){ if (flow.i<3){ flow.i++; drawFlow(); el('flow').scrollTop = 0; } });
+el('flowBack').addEventListener('click', function(){ if (flow.i>0){ flow.i--; if (flow.i<2) flow.pick = null; drawFlow(); } });
+el('flowBody').addEventListener('click', function(e){
+  var l = e.target.closest('[data-lang]'), w = e.target.closest('[data-who]'), p = e.target.closest('[data-pick]');
+  if (l) setLang(l.getAttribute('data-lang'));
+  else if (w){ flow.who = w.getAttribute('data-who'); flow.pick = null; drawFlow(); }
+  else if (p){ flow.pick = p.getAttribute('data-pick'); drawFlow(); }
+  else if (e.target.id==='flowDone') closeFlow();
+});
+el('flowBody').addEventListener('input', function(e){
+  if (e.target.id==='langSearch'){ flow.filter = e.target.value; drawFlow(); var s = el('langSearch'); s.focus(); s.setSelectionRange(s.value.length, s.value.length); }
+});
+
+function route(){
+  var h = location.hash, inv = h === '#investors' || h.indexOf('#inv-') === 0;
+  el('investorsView').hidden = !inv; el('top').hidden = inv;
+  if (h === '#investors' || h === '#top' || !h) window.scrollTo(0, 0);
+  else { var target = document.getElementById(h.slice(1)); if (target) target.scrollIntoView(); }
+}
+window.addEventListener('hashchange', route);
+drawSteps(); drawChat(0); route();
+var saved = null; try { saved = localStorage.getItem('pulse-lang'); } catch (e) {}
+setLang(saved && langLabel(saved)!==saved ? saved : 'en');
+</script>
+</body>
+</html>

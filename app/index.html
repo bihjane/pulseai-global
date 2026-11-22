@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PulseAI App Prototype</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout idea: one phone-width column of soft white cards on a warm ground, tab bar at the bottom. Single light theme by choice. */
+:root{color-scheme:light;--ground:#F6F1EA;--panel:#FFFFFF;--ink:#1E1814;--muted:#5E554D;--accent:#1A5FD6;--accent-soft:#E3ECFB;--label:#A6471F;--good:#0F5B34;--good-soft:#DDF3E6;--warn:#7A4B00;--warn-soft:#FFF0D2;--alert:#9B1C1C;--alert-soft:#FCE1DE;--sand:#EADCC8;--sage:#D2DFCB;--clay:#EFCDB9;--sky:#CCDDEC;--font:"Plus Jakarta Sans","Segoe UI",system-ui,sans-serif;--shadow:0 14px 40px rgba(30,24,20,.07)}
+*{box-sizing:border-box}[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--font);font-size:18px;line-height:1.5}
+h1,h2,h3{margin:0;font-weight:700;letter-spacing:-.03em;line-height:1.12;text-wrap:balance}
+h1{font-size:34px}h2{font-size:24px}h3{font-size:19px;letter-spacing:-.01em}
+p{margin:0}
+button,input,select{font-family:inherit;font-size:inherit;color:inherit}
+button{cursor:pointer;border:none}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+#shell{max-width:540px;margin:0 auto;min-height:100%;display:flex;flex-direction:column}
+#app{flex:1;padding:22px 18px 28px;display:flex;flex-direction:column;gap:18px}
+#app>*{animation:in .3s ease}
+@keyframes in{from{opacity:.3;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+#tabs{position:sticky;bottom:0;background:var(--panel);display:flex;padding:8px 6px 12px;border-radius:28px 28px 0 0;box-shadow:0 -10px 30px rgba(30,24,20,.06)}
+#tabs button{flex:1;min-height:56px;border-radius:20px;background:none;font-size:14px;font-weight:600;color:var(--muted);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+#tabs button.on{color:var(--ink);background:var(--ground)}
+.card{background:var(--panel);border-radius:28px;padding:20px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:12px}
+.flat{box-shadow:none;background:var(--ground)}
+.row{display:flex;gap:12px;align-items:center}
+.row>.grow{flex:1;min-width:0}
+.col{display:flex;flex-direction:column;gap:12px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.muted{color:var(--muted)}.small{font-size:15px}
+.label{font-size:14px;font-weight:700;color:var(--label)}
+.btn{min-height:56px;padding:0 24px;border-radius:28px;font-weight:700;font-size:17px;display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--panel);box-shadow:var(--shadow);transition:transform .15s}
+.btn:active{transform:scale(.98)}
+.btn.pri{background:var(--accent);color:#fff}.btn.dark{background:var(--ink);color:#fff}.btn.full{width:100%}
+.btn.soft{background:var(--ground);box-shadow:none}.btn.danger{background:var(--alert-soft);color:var(--alert);box-shadow:none}
+.tile{min-height:120px;border-radius:28px;padding:18px;text-align:left;font-weight:700;font-size:19px;letter-spacing:-.02em;line-height:1.15;display:flex;flex-direction:column;justify-content:space-between;transition:transform .2s}
+.tile:hover{transform:translateY(-3px)}
+.tile small{font-size:14px;font-weight:600;opacity:.75}
+.chip{min-height:44px;padding:0 16px;border-radius:22px;background:var(--panel);font-weight:600;font-size:15px}
+.chip.on{background:var(--ink);color:#fff}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.tag{display:inline-flex;align-self:flex-start;padding:6px 14px;border-radius:14px;font-size:14px;font-weight:700}
+.good{background:var(--good-soft);color:var(--good)}.warn{background:var(--warn-soft);color:var(--warn)}.alert{background:var(--alert-soft);color:var(--alert)}.info{background:var(--accent-soft);color:#0B3F99}
+.big{font-size:44px;font-weight:800;letter-spacing:-.04em;line-height:1}
+.av{width:54px;height:54px;border-radius:27px;display:flex;align-items:center;justify-content:center;font-weight:800;flex:none}
+.opt{min-height:64px;padding:14px 20px;border-radius:24px;background:var(--panel);text-align:left;font-weight:600;font-size:18px;box-shadow:var(--shadow);width:100%}
+.opt.on{background:var(--ink);color:#fff}
+label{font-size:15px;font-weight:600;display:flex;flex-direction:column;gap:6px}
+input,select{height:54px;border-radius:18px;border:none;background:var(--ground);padding:0 16px;width:100%}
+.card input,.card select{background:var(--ground)}
+.note{border-radius:22px;padding:14px 18px;font-size:15px;font-weight:500}
+.map{position:relative;display:flex;flex-direction:column;gap:12px;padding-left:36px}
+.map:before{content:"";position:absolute;left:9px;top:10px;bottom:10px;width:8px;border-radius:4px;background:var(--sand)}
+.map>div{position:relative;border-radius:22px;background:var(--panel);padding:14px 18px;font-weight:600;box-shadow:var(--shadow)}
+.map>div:before{content:"";position:absolute;left:-35px;top:50%;width:24px;height:24px;margin-top:-12px;border-radius:12px;background:var(--good)}
+.map>div.next{background:var(--ink);color:#fff}.map>div.next small{color:#D2C7BD}
+.map>div.next:before{background:var(--accent);box-shadow:0 0 0 6px var(--accent-soft)}
+.map small{display:block;font-weight:500;color:var(--muted)}
+.code{font-size:34px;font-weight:800;letter-spacing:.04em;font-variant-numeric:tabular-nums}
+.back{align-self:flex-start;min-height:44px;padding:0 16px 0 10px;border-radius:22px;background:var(--panel);font-weight:600;font-size:15px}
+.bubble{max-width:85%;padding:12px 16px;border-radius:20px;font-size:16px}
+.bubble.me{align-self:flex-end;background:var(--ink);color:#fff}.bubble.them{align-self:flex-start;background:var(--ground)}
+</style>
+</head>
+<body>
+<div id="shell"><main id="app"></main><nav id="tabs" aria-label="Main"></nav></div>
+<script>
+/* ---------- Engine: one state object, saved on this device, drives every screen ---------- */
+const KEY = 'pulseai-app-v1';
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const iso = d => d.toISOString().slice(0, 10);
+const today = () => iso(new Date());
+const daysAgo = n => { const d = new Date(); d.setDate(d.getDate() - n); return iso(d); };
+const nice = d => new Date(d + 'T12:00:00').toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+const uid = () => Math.random().toString(36).slice(2, 9);
+
+const fresh = () => ({ started: false, name: '', mode: 'patient', readings: [], journey: [], visits: [], pro: null, free: false, state: '', hideSms: true, research: false });
+let S, saved = true;
+try { S = JSON.parse(localStorage.getItem(KEY)); } catch (e) { S = null; }
+if (!S || typeof S !== 'object') S = fresh();
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); saved = true; } catch (e) { saved = false; } }
+let R = { tab: 'home', sub: null, d: {} };
+function go(tab, sub, d) { R = { tab, sub: sub || null, d: d || {} }; draw(); window.scrollTo(0, 0); }
+function event(kind, title) { S.journey.push({ id: uid(), kind, title, date: today() }); }
+
+const PROS = [
+  { id: 'an', name: 'Dr. Amara N.', role: 'General practitioner', type: 'gp', langs: 'English, French', st: ['VA','MD','DC','NY'], free: true, c: 'sky', helps: 'Fever and infections, blood pressure, lab results' },
+  { id: 'ls', name: 'Lindiwe S.', role: 'Registered nurse', type: 'nurse', langs: 'English, Spanish', st: ['VA','MD','DC','TX','FL'], free: true, c: 'sage', helps: 'Wound care, medicines, child health questions' },
+  { id: 'fk', name: 'Fatima K.', role: 'Nutritionist', type: 'nutrition', langs: 'English, Swahili', st: ['VA','DC','CA'], free: true, c: 'clay', helps: 'Healthy eating, weight, diabetes diet' },
+  { id: 'rp', name: 'Dr. Rahul P.', role: 'Paediatrician', type: 'specialist', langs: 'English, Hindi', st: ['CA','TX','NY','NJ'], free: true, c: 'sand', helps: 'Babies, children and teenagers' },
+  { id: 'jm', name: 'Dr. Jean M.', role: 'Cardiologist', type: 'specialist', langs: 'English, French', st: ['VA','MD','PA'], free: false, c: 'sky', helps: 'Heart health, blood pressure, chest symptoms' },
+  { id: 'mo', name: 'Maria O.', role: 'Therapist', type: 'mental', langs: 'Spanish, English', st: ['FL','TX','CA','VA'], free: false, c: 'sage', helps: 'Stress, sleep, low mood, anxiety' }
+];
+const STATES = 'AL AK AZ AR CA CO CT DE DC FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY'.split(' ');
+const stateSelect = (id, v) => `<select id="${id}" data-change="state"><option value="">Choose a state</option>${STATES.map(x => `<option${x === v ? ' selected' : ''}>${x}</option>`).join('')}</select>`;
+const pro = id => PROS.find(p => p.id === id);
+const initials = n => n.replace('Dr. ', '').split(' ').map(w => w[0]).join('').slice(0, 2);
+const KINDS = [['all', 'All'], ['gp', 'General doctors'], ['specialist', 'Specialists'], ['nurse', 'Nurses'], ['nutrition', 'Nutritionists'], ['mental', 'Mental health']];
+const TYPES = {
+  bp: { name: 'Blood pressure', unit: 'mmHg', what: 'Blood pressure is how hard your blood pushes against your blood vessels. The first number is the push when your heart beats. The second is the push when it rests between beats.' },
+  pulse: { name: 'Resting pulse', unit: 'beats per minute', what: 'Your resting pulse is how many times your heart beats in one minute while you sit quietly.' },
+  temp: { name: 'Temperature', unit: '°F', what: 'Body temperature can show whether your body is fighting an infection.' }
+};
+const val = r => r.type === 'bp' ? r.a + '/' + r.b : String(r.a);
+
+/* Plain language explanations for adults. Thresholds are general reference bands and must be reviewed by a clinical lead before real use. */
+function explain(r) {
+  const a = +r.a, b = +r.b;
+  if (r.type === 'bp') {
+    if (a >= 180 || b >= 120) return { tone: 'alert', tag: 'Very high', mean: 'This reading is very high. Rest for five minutes and measure again.', next: 'If it stays this high, or you have chest pain, a severe headache, or trouble seeing or breathing, get urgent medical help now.' };
+    if (a >= 140 || b >= 90) return { tone: 'warn', tag: 'High', mean: 'This reading is above the healthy range. One reading is only a snapshot, so the pattern over several days matters most.', next: 'Measure again at the same time on a few different days and share the readings with a clinician.' };
+    if (a >= 120 || b >= 80) return { tone: 'warn', tag: 'A little above ideal', mean: 'This is slightly above the ideal level. It is not an emergency.', next: 'Keep tracking. Movement, less salt and good sleep often help. Mention it at your next visit.' };
+    if (a < 90 || b < 60) return { tone: 'warn', tag: 'On the low side', mean: 'This is lower than usual. Some people are well at this level.', next: 'If you feel dizzy, faint or very tired, talk to a clinician.' };
+    return { tone: 'good', tag: 'Healthy range', mean: 'This reading is in the healthy range for most adults.', next: 'Keep doing what you are doing, and check again from time to time.' };
+  }
+  if (r.type === 'pulse') {
+    if (a > 100) return { tone: 'warn', tag: 'Faster than usual', mean: 'A resting pulse above 100 is faster than usual for an adult. Fever, stress, caffeine or recent activity can cause it.', next: 'Rest for ten minutes and measure again. If it stays fast, or you feel unwell, talk to a clinician.' };
+    if (a < 60) return { tone: 'warn', tag: 'Slower than usual', mean: 'A resting pulse below 60 is slower than usual. It is common in very fit people and during sleep.', next: 'If you feel dizzy, faint or short of breath, talk to a clinician.' };
+    return { tone: 'good', tag: 'Usual range', mean: 'This is within the usual resting range for adults, which is 60 to 100 beats per minute.', next: 'No action needed.' };
+  }
+  if (a >= 103.1) return { tone: 'alert', tag: 'High fever', mean: 'This is a high fever.', next: 'Contact a clinician today. Get urgent help if there is confusion, a stiff neck, trouble breathing or a rash that does not fade.' };
+  if (a >= 100.4) return { tone: 'warn', tag: 'Fever', mean: 'This is a fever, which usually means your body is fighting an infection.', next: 'Rest and drink fluids. See a clinician if it lasts more than three days or you feel worse.' };
+  if (a < 95) return { tone: 'alert', tag: 'Very low', mean: 'This temperature is very low.', next: 'Warm up and measure again. If it is still this low, get urgent medical help.' };
+  if (a > 99.5) return { tone: 'warn', tag: 'Slightly raised', mean: 'This is slightly above the usual range.', next: 'Measure again in a few hours.' };
+  return { tone: 'good', tag: 'Usual range', mean: 'This is a normal body temperature.', next: 'No action needed.' };
+}
+const latest = type => S.readings.filter(r => !type || r.type === type).sort((x, y) => x.date < y.date ? 1 : -1)[0];
+
+/* Symptom guidance. A simple, cautious demonstration and not a validated medical triage tool. */
+const SYMPTOMS = ['Fever', 'Headache', 'Cough or sore throat', 'Stomach pain or vomiting', 'Skin rash', 'Tiredness', 'Pain in a joint or muscle', 'Something else'];
+const DURS = ['Started today', '1 to 2 days', '3 to 7 days', 'More than a week'];
+const RED = ['Chest pain or pressure', 'Trouble breathing', 'Heavy bleeding', 'Fainting or confusion', 'Weakness on one side or trouble speaking', 'Severe pain that came on suddenly'];
+const CARE = ['Pregnant', 'Baby under 3 months', 'Long term condition such as diabetes or heart disease', 'Weak immune system'];
+function triage(d) {
+  if (d.red.length) return { tone: 'alert', level: 'Get emergency help now', text: 'You chose a warning sign that needs urgent care. Call 911 or go to the nearest emergency room. Do not wait for an online visit.' };
+  const di = DURS.indexOf(d.dur);
+  if (d.care.length || di === 3 || (d.sym === 'Fever' && di >= 2)) return { tone: 'warn', level: 'See a clinician today', text: 'Based on your answers, it is best to speak with a clinician today. They can ask more questions and decide whether you need a test.' };
+  if (di === 2) return { tone: 'warn', level: 'Book a visit in the next few days', text: 'This has lasted several days. A clinician can help you find the cause.' };
+  return { tone: 'good', level: 'Self care for now', text: 'This often settles on its own. Rest, drink fluids and watch how you feel. Check again or see a clinician if it gets worse or lasts more than a few days.' };
+}
+
+/* ---------- Screens ---------- */
+const back = (tab, sub, text) => `<button class="back" data-act="go" data-v="${tab}${sub ? ':' + sub : ''}">‹ ${text || 'Back'}</button>`;
+const demo = text => `<div class="note info">${text}</div>`;
+
+function welcome() {
+  return `<div class="col" style="gap:22px;margin-top:8vh">
+    <div class="label">PulseAI prototype, United States launch</div>
+    <h1 style="font-size:42px">Understand your health, your way</h1>
+    <p class="muted">This is a working prototype. Everything you enter stays in this browser on this device. Please use sample or made up information, not real medical records.</p>
+    <label>Your first name (optional)<input id="name" autocomplete="off" maxlength="30" style="background:var(--panel)"></label>
+    <button class="btn pri full" data-act="start" data-v="sample">Start with sample data</button>
+    <button class="btn full" data-act="start" data-v="empty">Start empty</button>
+    <button class="btn soft full" data-act="start" data-v="pro">I am a health professional</button>
+    <button class="btn soft full" data-act="open">Open questions for the product owner</button>
+  </div>`;
+}
+
+function home() {
+  const r = latest(), v = S.visits.find(x => x.status === 'requested' || x.status === 'accepted');
+  const e = r && explain(r);
+  return `<div><p class="muted">Hello${S.name ? ', ' + esc(S.name) : ''}</p><h1>How can we help today?</h1></div>
+  <div class="grid">
+    <button class="tile" style="background:var(--sand)" data-act="go" data-v="care:symptoms">Check my symptoms<small>Guided questions</small></button>
+    <button class="tile" style="background:var(--sage)" data-act="go" data-v="care">Find a clinician<small>Verified and free now</small></button>
+    <button class="tile" style="background:var(--sky)" data-act="go" data-v="health">Understand my numbers<small>Plain words</small></button>
+    <button class="tile" style="background:var(--clay)" data-act="go" data-v="journey">My care journey<small>See where you are</small></button>
+  </div>
+  ${v ? `<div class="card"><div class="label">Your visit</div><div class="row"><div class="av" style="background:var(--${pro(v.pro).c})">${initials(pro(v.pro).name)}</div><div class="grow"><h3>${pro(v.pro).name}</h3><p class="muted small">${v.status === 'requested' ? 'Waiting for the clinician to accept' : 'Accepted. You can join now.'}</p></div></div><button class="btn dark full" data-act="go" data-v="care:visit:${v.id}">Open visit</button></div>` : ''}
+  ${r ? `<div class="card"><div class="label">Latest reading</div><p class="muted small">${TYPES[r.type].name}, ${nice(r.date)}</p><div class="big">${val(r)}</div><span class="tag ${e.tone}">${e.tag}</span><p>${e.mean}</p><button class="btn soft full" data-act="type" data-v="${r.type}">See what it means</button></div>` : `<div class="card"><h3>No readings yet</h3><p class="muted">Add a blood pressure, pulse or temperature reading and PulseAI will explain it.</p><button class="btn pri full" data-act="go" data-v="health">Add a reading</button></div>`}`;
+}
+
+function symptoms() {
+  const d = R.d; d.step = d.step || 0; d.red = d.red || []; d.care = d.care || [];
+  const pick = (list, key) => list.map(x => `<button class="opt${d[key] === x ? ' on' : ''}" data-act="sym" data-k="${key}" data-v="${esc(x)}">${x}</button>`).join('');
+  const multi = (list, key) => list.map(x => `<button class="opt${d[key].includes(x) ? ' on' : ''}" data-act="symm" data-k="${key}" data-v="${esc(x)}">${x}</button>`).join('');
+  const nav = ok => `<div class="row"><button class="btn" data-act="symstep" data-v="-1">Back</button><button class="btn pri grow" data-act="symstep" data-v="1" ${ok ? '' : 'disabled style="opacity:.4"'}>Continue</button></div>`;
+  let body;
+  if (d.step === 0) body = `<h1>What is bothering you most?</h1><div class="col">${pick(SYMPTOMS, 'sym')}</div>${nav(d.sym)}`;
+  else if (d.step === 1) body = `<h1>How long has it lasted?</h1><div class="col">${pick(DURS, 'dur')}</div>${nav(d.dur)}`;
+  else if (d.step === 2) body = `<h1>Do you have any of these right now?</h1><p class="muted">Choose all that apply, or continue if none.</p><div class="col">${multi(RED, 'red')}</div>${nav(true)}`;
+  else if (d.step === 3) body = `<h1>Do any of these apply to you?</h1><p class="muted">Choose all that apply, or continue if none.</p><div class="col">${multi(CARE, 'care')}</div>${nav(true)}`;
+  else {
+    const t = triage(d);
+    body = `<div class="label">Your guidance</div><h1>${t.level}</h1><span class="tag ${t.tone}">${esc(d.sym)}, ${esc(d.dur).toLowerCase()}</span><p>${t.text}</p>
+    ${t.tone === 'alert' ? '' : `<button class="btn pri full" data-act="go" data-v="care">Find a clinician</button>`}
+    <button class="btn full" data-act="go" data-v="journey">See my journey</button>
+    <div class="note warn">This is general guidance from a simple demonstration and not a diagnosis. If you feel very unwell, seek care without delay.</div>`;
+  }
+  return `${back('home')}<div class="note alert">Emergency? Chest pain, trouble breathing, heavy bleeding or fainting need 911 now. For a mental health crisis, call or text 988.</div>${body}`;
+}
+
+function care() {
+  if (R.sub === 'symptoms') return symptoms();
+  if (R.sub === 'pro') return proPage();
+  if (R.sub === 'request') return requestPage();
+  if (R.sub === 'visit') return visitPage();
+  if (R.sub === 'rx') return rxPage();
+  const k = R.d.kind || 'all', freeOnly = R.d.free !== false;
+  const list = PROS.filter(p => (k === 'all' || p.type === k) && (!freeOnly || p.free) && (!S.state || p.st.includes(S.state)));
+  const mine = S.visits.slice().reverse();
+  return `<h1>Find care</h1><p class="muted">Every practitioner is identity and licence verified before joining. These are sample profiles.</p>
+  <div class="card"><label>Which state are you in right now?${stateSelect('st', S.state)}</label><p class="muted small">In the US a clinician must be licensed in the state where you are at the time of the visit, so we only show people who can treat you there.</p></div>
+  <div class="chips">${KINDS.map(x => `<button class="chip${x[0] === k ? ' on' : ''}" data-act="kind" data-v="${x[0]}">${x[1]}</button>`).join('')}</div>
+  <button class="chip${freeOnly ? ' on' : ''}" style="align-self:flex-start" data-act="freeonly">${freeOnly ? 'Showing people free now' : 'Showing everyone'}</button>
+  ${list.map(p => `<button class="card" style="text-align:left" data-act="go" data-v="care:pro:${p.id}"><div class="row"><div class="av" style="background:var(--${p.c})">${initials(p.name)}</div><div class="grow"><h3>${p.name}</h3><p class="muted small">${p.role}. ${p.langs}</p></div></div><div class="row"><span class="tag ${p.free ? 'good' : 'info'}">${p.free ? 'Free now' : 'Book for later'}</span><span class="grow"></span><span class="small" style="font-weight:700">[FEE]</span></div></button>`).join('') || '<div class="card"><p>No sample practitioner matches. Try another state, or show everyone.</p></div>'}
+  ${mine.length ? `<h2 style="margin-top:8px">My visits</h2>${mine.map(v => `<button class="card flat" style="text-align:left;background:var(--panel)" data-act="go" data-v="care:${v.status === 'done' ? 'rx' : 'visit'}:${v.id}"><div class="row"><div class="grow"><h3>${pro(v.pro).name}</h3><p class="muted small">${nice(v.date)}, ${v.mode}</p></div><span class="tag ${v.status === 'done' ? 'good' : v.status === 'declined' ? 'alert' : 'info'}">${{ requested: 'Requested', accepted: 'Accepted', done: 'Completed', declined: 'Declined' }[v.status]}</span></div></button>`).join('')}` : ''}`;
+}
+
+function proPage() {
+  const p = pro(R.d.id);
+  return `${back('care')}<div class="row"><div class="av" style="background:var(--${p.c});width:76px;height:76px;border-radius:38px;font-size:24px">${initials(p.name)}</div><div><h1 style="font-size:28px">${p.name}</h1><p class="muted">${p.role}</p></div></div>
+  <span class="tag ${p.free ? 'good' : 'info'}">${p.free ? 'Free now' : 'Book for later'}</span>
+  <div class="card"><div class="label">Verified by PulseAI</div><div class="row"><span class="grow">Identity checked</span><b style="color:var(--good)">Confirmed</b></div><div class="row"><span class="grow">Licence with regulator</span><b style="color:var(--good)">Confirmed</b></div><div class="row"><span class="grow">Training reviewed</span><b style="color:var(--good)">Confirmed</b></div></div>
+  <div class="card"><div class="label">Can help with</div><p>${p.helps}</p><div class="label">Speaks</div><p>${p.langs}</p><div class="label">Licensed to treat patients in</div><p>${p.st.join(', ')}</p></div>
+  <button class="btn pri full" data-act="go" data-v="care:request:${p.id}">${p.free ? 'Request a visit now' : 'Request a visit'}</button>`;
+}
+
+function requestPage() {
+  const p = pro(R.d.id), d = R.d; d.mode = d.mode || 'Video'; d.pay = d.pay || 'Card'; if (d.share == null) d.share = true;
+  const seg = (key, list) => `<div class="chips">${list.map(x => `<button class="chip${d[key] === x ? ' on' : ''}" style="background:${d[key] === x ? '' : 'var(--ground)'}" data-act="req" data-k="${key}" data-v="${x}">${x}</button>`).join('')}</div>`;
+  return `${back('care', 'pro:' + p.id)}<h1>Request a visit with ${p.name}</h1>
+  <div class="card"><div class="label">How would you like to meet?</div>${seg('mode', ['Video', 'Audio', 'Chat'])}<p class="muted small">If your signal is weak, the visit moves to audio or chat.</p></div>
+  <div class="card"><div class="label">How would you like to pay?</div>${seg('pay', ['Card', 'Insurance', 'HSA or FSA', 'A sponsor pays'])}<div class="row"><span class="grow">Visit fee</span><b>[FEE]</b></div></div>
+  <div class="card"><div class="row"><div class="grow"><h3>Share my readings for this visit</h3><p class="muted small">${S.readings.length} readings. Access ends when the visit ends.</p></div><button class="chip${d.share ? ' on' : ''}" style="background:${d.share ? '' : 'var(--ground)'}" data-act="req" data-k="share" data-v="toggle">${d.share ? 'On' : 'Off'}</button></div></div>
+  <div class="card"><label>Which state are you in right now?${stateSelect('st2', S.state)}</label>${S.state && !p.st.includes(S.state) ? `<p class="small" style="color:var(--alert)">${p.name} is not licensed in ${S.state}, so this visit cannot be requested.</p>` : ''}</div>
+  <p id="reqerr" class="small" style="color:var(--alert)" aria-live="polite"></p>
+  ${demo('Prototype. No money moves and no real clinician is contacted.')}
+  <button class="btn pri full" data-act="sendreq">Send request</button>`;
+}
+
+function visitPage() {
+  const v = S.visits.find(x => x.id === R.d.id); if (!v) return care();
+  const p = pro(v.pro);
+  if (v.status === 'requested') return `${back('care')}<div class="label">Visit requested</div><h1>Waiting for ${p.name} to accept</h1><div class="card"><div class="row"><span class="grow">Type</span><b>${v.mode}</b></div><div class="row"><span class="grow">Payment</span><b>${v.pay}</b></div><div class="row"><span class="grow">Readings shared</span><b>${v.share ? 'Yes' : 'No'}</b></div></div>
+    ${demo('In the prototype you play both sides. Accept here, or open the clinician view from the Me tab and accept it there.')}
+    <button class="btn pri full" data-act="accept" data-v="${v.id}">Simulate the clinician accepting</button><button class="btn danger full" data-act="cancel" data-v="${v.id}">Cancel request</button>`;
+  if (v.status === 'declined') return `${back('care')}<h1>${p.name} could not take this visit</h1><p class="muted">You have not been charged. Choose another practitioner.</p><button class="btn pri full" data-act="go" data-v="care">Find care</button>`;
+  if (v.status === 'done') return rxPage();
+  const chat = v.chat || [];
+  return `<div class="label">${v.mode} visit in progress</div>
+  <div class="card" style="background:var(--ink);color:#fff;align-items:center;padding:36px 20px"><div class="av" style="background:var(--${p.c});color:var(--ink);width:110px;height:110px;border-radius:55px;font-size:36px">${initials(p.name)}</div><h2>${p.name}</h2><span class="tag good">Encrypted connection</span></div>
+  <div class="card"><div class="col" style="gap:8px"><div class="bubble them">Hello${S.name ? ' ' + esc(S.name) : ''}. I have ${v.share ? 'seen the readings you shared' : 'your request'}. Tell me how you are feeling.</div>${chat.map(m => `<div class="bubble me">${esc(m)}</div>`).join('')}</div><div class="row"><label class="grow" style="position:relative"><span style="position:absolute;left:-9999px">Message</span><input id="msg" placeholder="Type a message" maxlength="200"></label><button class="btn dark" data-act="msg" data-v="${v.id}">Send</button></div></div>
+  ${demo('Prototype. The clinician is simulated and does not reply.')}
+  <button class="btn danger full" data-act="endvisit" data-v="${v.id}">End visit</button>`;
+}
+
+function rxPage() {
+  const v = S.visits.find(x => x.id === R.d.id); if (!v) return care();
+  return `${back('care')}<div class="label">Visit completed, ${nice(v.date)}</div><h1>Your prescription</h1>
+  <div class="card"><p class="muted small">Prescribed by ${pro(v.pro).name}</p><h2>[Medicine set by the clinician]</h2><p>[Instructions in plain words and in your language]</p><div class="label">Show this code at a partner pharmacy</div><div class="code">${v.code}</div><p class="muted small">The code works without internet.</p></div>
+  <div class="card"><div class="label">Visit summary</div><p>[Notes written by the clinician appear here]</p></div>
+  ${demo('Prototype. This is not a real prescription.')}
+  <button class="btn full" data-act="go" data-v="journey">See my journey</button>`;
+}
+
+function chart(type) {
+  const rs = S.readings.filter(r => r.type === type).sort((x, y) => x.date > y.date ? 1 : -1).slice(-12);
+  if (rs.length < 2) return '<p class="muted small">Add two or more readings to see a trend.</p>';
+  const vals = rs.flatMap(r => type === 'bp' ? [+r.a, +r.b] : [+r.a]), lo = Math.min(...vals), hi = Math.max(...vals), span = hi - lo || 1;
+  const pts = key => rs.map((r, i) => `${(10 + i * 280 / (rs.length - 1)).toFixed(1)},${(110 - (+r[key] - lo) / span * 95).toFixed(1)}`).join(' ');
+  const last = key => pts(key).split(' ').pop().split(',');
+  return `<svg viewBox="0 0 300 125" role="img" aria-label="${TYPES[type].name} trend from ${nice(rs[0].date)} to ${nice(rs[rs.length - 1].date)}" style="width:100%"><polyline points="${pts('a')}" fill="none" stroke="#1A5FD6" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${last('a')[0]}" cy="${last('a')[1]}" r="6" fill="#1A5FD6"/>${type === 'bp' ? `<polyline points="${pts('b')}" fill="none" stroke="#A6471F" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${last('b')[0]}" cy="${last('b')[1]}" r="6" fill="#A6471F"/>` : ''}</svg><div class="row small muted"><span class="grow">${nice(rs[0].date)}</span><span>${nice(rs[rs.length - 1].date)}</span></div>${type === 'bp' ? '<p class="small muted">Blue is the first number. Brown is the second number.</p>' : ''}`;
+}
+
+function health() {
+  const type = R.d.type || 'bp', T = TYPES[type], r = latest(type), e = r && explain(r);
+  const hist = S.readings.filter(x => x.type === type).sort((x, y) => x.date < y.date ? 1 : -1);
+  return `<h1>My numbers</h1><div class="chips">${Object.keys(TYPES).map(k => `<button class="chip${k === type ? ' on' : ''}" data-act="type" data-v="${k}">${TYPES[k].name}</button>`).join('')}</div>
+  ${r ? `<div class="card"><p class="muted small">Latest, ${nice(r.date)}</p><div class="row" style="align-items:baseline"><span class="big">${val(r)}</span><span class="muted">${T.unit}</span></div><span class="tag ${e.tone}">${e.tag}</span>${chart(type)}</div>
+  <div class="card"><div class="label">What this number is</div><p>${T.what}</p><div class="label">What yours means</div><p>${e.mean}</p><div class="label">What to do next</div><p>${e.next}</p><p class="muted small">General information for adults and not a diagnosis.</p><button class="btn soft full" data-act="go" data-v="care">Talk to a clinician</button></div>` : `<div class="card"><h3>No ${T.name.toLowerCase()} readings yet</h3><p class="muted">${T.what}</p></div>`}
+  <div class="card"><h3>Add a reading</h3><div class="row">${type === 'bp' ? `<label class="grow">First number<input id="ra" inputmode="numeric" placeholder="120"></label><label class="grow">Second number<input id="rb" inputmode="numeric" placeholder="80"></label>` : `<label class="grow">${T.name} in ${T.unit}<input id="ra" inputmode="decimal" placeholder="${type === 'pulse' ? '72' : '98.6'}"></label>`}</div><label>Date<input id="rd" type="date" value="${today()}" max="${today()}"></label><p id="rerr" class="small" style="color:var(--alert)" aria-live="polite"></p><button class="btn pri full" data-act="addreading" data-v="${type}">Save and explain</button></div>
+  ${hist.length ? `<h2>History</h2>${hist.map(x => `<div class="card flat" style="background:var(--panel)"><div class="row"><div class="grow"><b>${val(x)}</b> <span class="muted small">${T.unit}</span><p class="muted small">${nice(x.date)}</p></div><span class="tag ${explain(x).tone}">${explain(x).tag}</span><button class="chip" style="background:var(--ground)" data-act="delreading" data-v="${x.id}" aria-label="Delete reading">Delete</button></div></div>`).join('')}` : ''}`;
+}
+
+function journey() {
+  const ev = S.journey.slice().sort((x, y) => x.date > y.date ? 1 : -1);
+  const open = S.visits.find(v => v.status === 'requested' || v.status === 'accepted'), done = S.visits.some(v => v.status === 'done');
+  const next = open ? ['Your visit with ' + pro(open.pro).name, open.status === 'requested' ? 'Waiting for the clinician' : 'Ready to join'] : done ? ['Follow up check', 'Add a new reading in a week'] : S.readings.length ? ['Talk to a clinician about your numbers', 'When you are ready'] : ['Add your first reading', 'Start building your baseline'];
+  return `<h1>My care journey</h1><p class="muted">Everything you do in PulseAI is placed on one map, so you always know where you are.</p>
+  <div class="map">${ev.map(e => `<div>${esc(e.title)}<small>${nice(e.date)}</small></div>`).join('')}<div class="next">${next[0]}<small>Next. ${next[1]}</small></div></div>
+  ${ev.length ? '' : '<p class="muted small">Your steps appear here as you check symptoms, add readings and meet clinicians.</p>'}`;
+}
+
+function me() {
+  const shared = S.visits.filter(v => v.share && (v.status === 'requested' || v.status === 'accepted'));
+  const tog = (key, text) => `<div class="row"><span class="grow">${text}</span><button class="chip${S[key] ? ' on' : ''}" style="background:${S[key] ? '' : 'var(--ground)'}" data-act="toggle" data-v="${key}">${S[key] ? 'On' : 'Off'}</button></div>`;
+  return `<h1>Me</h1>
+  <div class="card"><label>First name<input id="name" value="${esc(S.name)}" maxlength="30"></label><button class="btn soft full" data-act="savename">Save name</button></div>
+  <div class="card"><div class="label">Who can see my readings</div>${shared.length ? shared.map(v => `<div class="row"><span class="grow">${pro(v.pro).name}<br><span class="muted small">Until the visit ends</span></span><button class="chip" style="background:var(--alert-soft);color:var(--alert)" data-act="unshare" data-v="${v.id}">Remove</button></div>`).join('') : '<p class="muted">No one. Your readings are shared only when you choose it for a visit.</p>'}</div>
+  <div class="card"><div class="label">My choices</div>${tog('hideSms', 'Hide health details in messages')}${tog('research', 'Use my data, without my name, to improve care')}</div>
+  <div class="card"><div class="label">My data</div><p class="muted small">${saved ? 'Saved in this browser on this device only.' : 'This browser is not allowing storage, so your data will be lost when you close the page.'}</p><button class="btn soft full" data-act="copy">Copy all my data</button><p id="copied" class="small muted" aria-live="polite"></p><button class="btn danger full" data-act="wipe">Delete all my data</button></div>
+  <button class="btn dark full" data-act="mode" data-v="pro">Switch to clinician view</button>
+  <button class="btn full" data-act="open">Open questions for the product owner</button>`;
+}
+
+
+/* Open questions for the product owner. Each one is a placeholder in the product until it is answered. */
+const OPEN = [
+  ['Product', 'Final brand name, tagline and logo'], ['Product', 'First launch states (the prototype assumes any state)'], ['Product', 'Launch date and pilot partners'], ['Product', 'Languages at launch (the app is English only today)'],
+  ['Clinical', 'Name of the clinical lead who approves all medical content'], ['Clinical', 'Review of the symptom guidance rules'], ['Clinical', 'Review of the reading thresholds for blood pressure, pulse and temperature'], ['Clinical', 'Which professions can join at launch'], ['Clinical', 'Prescribing scope, including whether any controlled medicines are allowed'], ['Clinical', 'Emergency and crisis policy'],
+  ['Legal', 'Company structure for clinical care in each state (management company and physician owned practice)'], ['Legal', 'HIPAA privacy notice, security program and vendor agreements'], ['Legal', 'Terms of use and telehealth consent wording'], ['Legal', 'Malpractice and platform liability insurance'], ['Legal', 'FDA position on the symptom check and the explanations'], ['Legal', 'State health privacy laws that apply'],
+  ['Money', 'Visit fee, shown as [FEE]'], ['Money', 'Clinician payout share, shown as [AMOUNT]'], ['Money', 'Payment provider, and whether insurance is accepted at launch'], ['Money', 'Funding plan and investor figures on the website'],
+  ['Technology', 'Hosting and database provider that will sign a health data agreement'], ['Technology', 'Video and audio visit provider'], ['Technology', 'E-prescribing provider, shown as [Medicine set by the clinician]'], ['Technology', 'Identity and licence verification provider'], ['Technology', 'AI model for explanations and questions, with a health data agreement'],
+  ['Content', 'Real practitioners to replace the six sample profiles'], ['Content', 'Visit summary and prescription instructions written by clinicians']
+];
+function openPage() {
+  const areas = [...new Set(OPEN.map(x => x[0]))];
+  return `<button class="back" data-act="closeopen">‹ Back</button><div class="label">For Charles</div><h1>Open questions and placeholders</h1><p class="muted">Each item below is a placeholder in this prototype. Anything shown in square brackets in the app is waiting for one of these answers.</p>${areas.map(a => `<h2>${a}</h2>${OPEN.filter(x => x[0] === a).map(x => `<div class="card flat" style="background:var(--panel)"><div class="row"><span class="grow">${x[1]}</span><span class="tag warn">Open</span></div></div>`).join('')}`).join('')}<p class="muted small">${OPEN.length} open items.</p>`;
+}
+let showOpen = false;
+
+/* Clinician side */
+function proHome() {
+  if (!S.pro) return `<div class="label">For health professionals</div><h1>Share your expertise whenever you are free</h1>
+    <div class="card"><label>I am a<select id="prole">${['Specialist doctor', 'General practitioner', 'Nurse', 'Midwife', 'Nutritionist', 'Pharmacist', 'Therapist', 'Other medical expert'].map(x => `<option>${x}</option>`).join('')}</select></label><label>State where you are licensed<select id="pcountry"><option value="">Choose a state</option>${STATES.map(x => `<option>${x}</option>`).join('')}</select></label><label>National Provider Identifier, 10 digits<input id="preg" inputmode="numeric" maxlength="10" placeholder="Use a made up number in this prototype"></label><label>State licence number<input id="plic" maxlength="30" placeholder="Use a made up number in this prototype"></label><p id="perr" class="small" style="color:var(--alert)" aria-live="polite"></p></div>
+    ${demo('Prototype. Nothing is sent. In the real service we check identity, the state licence, the national provider record and certificates before a profile goes live.')}
+    <button class="btn pri full" data-act="apply">Submit for verification</button><button class="btn full" data-act="mode" data-v="patient">Back to patient view</button>`;
+  if (S.pro.status === 'review') return `<div class="label">Application received</div><h1>We are reviewing your details</h1><div class="card"><div class="row"><span class="grow">Role</span><b>${esc(S.pro.role)}</b></div><div class="row"><span class="grow">Licensed in</span><b>${esc(S.pro.country)}</b></div><div class="row"><span class="grow">Status</span><span class="tag warn">In review</span></div></div>
+    ${demo('Prototype. Approve yourself to see the practitioner dashboard.')}<button class="btn pri full" data-act="approve">Simulate approval</button><button class="btn full" data-act="mode" data-v="patient">Back to patient view</button>`;
+  const reqs = S.visits.filter(v => v.status === 'requested'), doneN = S.visits.filter(v => v.status === 'done').length;
+  return `<div class="row"><div class="grow"><p class="muted">Practitioner dashboard</p><h1>${esc(S.pro.role)}</h1></div><span class="tag good">Verified</span></div>
+  <div class="card" style="background:var(--ink);color:#fff"><div class="row"><div class="grow"><h2>${S.free ? 'I am free now' : 'I am not available'}</h2><p class="small" style="color:#D2C7BD">${S.free ? 'Patients can request you until you switch this off.' : 'Switch on to receive visit requests.'}</p></div><button class="chip" style="background:${S.free ? '#5FD38D' : '#fff'};color:var(--ink)" data-act="toggle" data-v="free">${S.free ? 'On' : 'Off'}</button></div></div>
+  <h2>New requests</h2>
+  ${!S.free ? '<div class="card"><p class="muted">Switch yourself to free to see requests.</p></div>' : reqs.length ? reqs.map(v => `<div class="card"><h3>${v.mode} visit${S.name ? ' with ' + esc(S.name) : ''}</h3><p class="muted small">Requested ${nice(v.date)}. Pays by ${v.pay.toLowerCase()}. ${v.share ? 'Readings shared.' : 'No readings shared.'}</p>${v.share && latest() ? `<p class="small">Latest shared reading: <b>${TYPES[latest().type].name} ${val(latest())}</b></p>` : ''}<div class="row"><button class="btn pri grow" data-act="accept" data-v="${v.id}">Accept</button><button class="btn soft grow" data-act="decline" data-v="${v.id}">Decline</button></div></div>`).join('') : '<div class="card"><p class="muted">No requests yet. Switch to the patient view and request a visit to see one arrive here.</p></div>'}
+  <div class="grid"><div class="card"><p class="muted small">Visits completed</p><div class="big">${doneN}</div></div><div class="card"><p class="muted small">Earned</p><div class="big" style="font-size:28px">[AMOUNT]</div></div></div>
+  <button class="btn full" data-act="mode" data-v="patient">Switch to patient view</button>`;
+}
+
+/* ---------- Actions ---------- */
+const ACT = {
+  go(v) { const [tab, sub, id] = v.split(':'); go(tab, sub, id ? { id } : {}); },
+  start(v) {
+    S = fresh(); S.started = true; S.name = ($('name').value || '').trim();
+    if (v === 'sample') {
+      [[12, 138, 88], [9, 134, 86], [6, 131, 84], [3, 128, 84], [0, 124, 80]].forEach(x => S.readings.push({ id: uid(), type: 'bp', a: x[1], b: x[2], date: daysAgo(x[0]) }));
+      [[9, 78], [3, 72], [0, 68]].forEach(x => S.readings.push({ id: uid(), type: 'pulse', a: x[1], date: daysAgo(x[0]) }));
+      S.readings.push({ id: uid(), type: 'temp', a: 98.4, date: daysAgo(1) });
+      S.journey.push({ id: uid(), kind: 'start', title: 'Started tracking blood pressure', date: daysAgo(12) });
+    }
+    if (v === 'pro') S.mode = 'pro';
+    save(); go('home');
+  },
+  type(v) { go('health', null, { type: v }); },
+  kind(v) { R.d.kind = v; draw(); },
+  freeonly() { R.d.free = R.d.free === false; draw(); },
+  sym(v, b) { R.d[b.dataset.k] = v; draw(); },
+  symm(v, b) { const a = R.d[b.dataset.k], i = a.indexOf(v); i < 0 ? a.push(v) : a.splice(i, 1); draw(); },
+  symstep(v) {
+    const d = R.d; d.step += +v;
+    if (d.step < 0) return go('home');
+    if (d.step === 3 && d.red.length) d.step = 4;
+    if (d.step === 4) { event('symptoms', 'Symptom check: ' + d.sym.toLowerCase() + ', ' + triage(d).level.toLowerCase()); save(); }
+    draw(); window.scrollTo(0, 0);
+  },
+  req(v, b) { const k = b.dataset.k; R.d[k] = v === 'toggle' ? !R.d[k] : v; draw(); },
+  sendreq() {
+    if (!S.state || !pro(R.d.id).st.includes(S.state)) { $('reqerr').textContent = S.state ? 'Choose a practitioner licensed in your state.' : 'Choose the state you are in first.'; return; }
+    const v = { id: uid(), pro: R.d.id, mode: R.d.mode, pay: R.d.pay, share: R.d.share, status: 'requested', date: today(), code: 'PX ' + Math.floor(10 + Math.random() * 90) + ' ' + Math.floor(10 + Math.random() * 90) + ' ' + Math.floor(10 + Math.random() * 90), chat: [] };
+    S.visits.push(v); event('visit', 'Requested a ' + v.mode.toLowerCase() + ' visit with ' + pro(v.pro).name); save(); go('care', 'visit', { id: v.id });
+  },
+  accept(id) { const v = S.visits.find(x => x.id === id); v.status = 'accepted'; save(); S.mode === 'pro' ? draw() : go('care', 'visit', { id }); },
+  decline(id) { S.visits.find(x => x.id === id).status = 'declined'; save(); draw(); },
+  cancel(id) { S.visits = S.visits.filter(x => x.id !== id); event('visit', 'Cancelled a visit request'); save(); go('care'); },
+  msg(id) { const t = $('msg').value.trim(); if (!t) return; const v = S.visits.find(x => x.id === id); (v.chat = v.chat || []).push(t); save(); draw(); },
+  endvisit(id) { const v = S.visits.find(x => x.id === id); v.status = 'done'; v.share = false; event('visit', 'Visit with ' + pro(v.pro).name + ' completed'); event('rx', 'Prescription issued, code ' + v.code); save(); go('care', 'rx', { id }); },
+  addreading(type) {
+    const a = parseFloat($('ra').value), b = type === 'bp' ? parseFloat($('rb').value) : null, d = $('rd').value || today();
+    const lim = { bp: [50, 260], pulse: [25, 230], temp: [86, 111] }[type];
+    const bad = isNaN(a) || a < lim[0] || a > lim[1] || (type === 'bp' && (isNaN(b) || b < 30 || b > 160 || b >= a));
+    if (bad) { $('rerr').textContent = type === 'bp' ? 'Enter both numbers, for example 120 and 80. The first should be the larger one.' : 'Enter a number between ' + lim[0] + ' and ' + lim[1] + '.'; return; }
+    const r = { id: uid(), type, a, date: d }; if (type === 'bp') r.b = b;
+    S.readings.push(r); event('reading', TYPES[type].name + ' recorded: ' + val(r)); save(); go('health', null, { type });
+  },
+  delreading(id) { S.readings = S.readings.filter(r => r.id !== id); save(); draw(); },
+  toggle(k) { S[k] = !S[k]; save(); draw(); },
+  savename() { S.name = $('name').value.trim(); save(); draw(); },
+  unshare(id) { S.visits.find(x => x.id === id).share = false; save(); draw(); },
+  copy() { const t = JSON.stringify(S, null, 2); (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => { $('copied').textContent = 'Copied. Paste it somewhere safe.'; }, () => { $('copied').textContent = 'Copying is blocked in this browser.'; }); },
+  wipe(v, b) { if (b.dataset.sure) { try { localStorage.removeItem(KEY); } catch (e) {} S = fresh(); go('home'); } else { b.dataset.sure = 1; b.textContent = 'Tap again to delete everything. This cannot be undone.'; } },
+  mode(v) { S.mode = v; save(); go('home'); },
+  open() { showOpen = true; draw(); window.scrollTo(0, 0); },
+  closeopen() { showOpen = false; draw(); },
+  apply() {
+    const f = { role: $('prole').value, country: $('pcountry').value.trim(), reg: $('preg').value.trim(), lic: $('plic').value.trim() };
+    if (!f.country || !/^\d{10}$/.test(f.reg) || !f.lic) { $('perr').textContent = 'Choose your state, enter a 10 digit provider identifier and a licence number.'; return; }
+    S.pro = Object.assign(f, { status: 'review' }); save(); draw();
+  },
+  approve() { S.pro.status = 'verified'; S.free = true; save(); draw(); }
+};
+document.addEventListener('change', e => { if (e.target.dataset && e.target.dataset.change === 'state') { S.state = e.target.value; save(); draw(); } });
+document.addEventListener('click', e => { const b = e.target.closest('[data-act]'); if (b && ACT[b.dataset.act]) ACT[b.dataset.act](b.dataset.v, b); });
+
+const TABS = [['home', 'Home'], ['care', 'Care'], ['health', 'Numbers'], ['journey', 'Journey'], ['me', 'Me']];
+function draw() {
+  const tabs = $('tabs');
+  if (showOpen) { tabs.hidden = true; $('app').innerHTML = openPage(); return; }
+  if (!S.started) { tabs.hidden = true; $('app').innerHTML = welcome(); return; }
+  if (S.mode === 'pro') { tabs.hidden = true; $('app').innerHTML = proHome(); return; }
+  tabs.hidden = false;
+  tabs.innerHTML = TABS.map(t => `<button class="${R.tab === t[0] ? 'on' : ''}" data-act="go" data-v="${t[0]}" ${R.tab === t[0] ? 'aria-current="page"' : ''}>${t[1]}</button>`).join('');
+  $('app').innerHTML = ({ home, care, health, journey, me }[R.tab] || home)();
+}
+draw();
+</script>
+</body>
+</html>
