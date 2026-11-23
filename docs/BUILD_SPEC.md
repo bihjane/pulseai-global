@@ -6,6 +6,15 @@ Version 0.1, 22 November 2026. Source of truth for behaviour: `app/index.html` (
 
 One product where a person can (a) keep health readings and records, (b) get plain-language explanations and a journey map, and (c) meet a verified clinician licensed in their state.
 
+## 1a. Operating model (decided)
+
+PulseAI is a technology platform. It does not employ clinicians or deliver care. Practitioners are independent: they hold their own licence, insurance and records, set their own fees and make every clinical decision. Consequences for the build:
+- Each practitioner signs a platform agreement and a HIPAA business associate agreement before going live.
+- Practitioners set their visit fee in their profile. PulseAI charges them a platform fee of [AMOUNT]; a percentage of visit fees is not assumed.
+- Visit summaries and prescriptions belong to the practitioner's record; PulseAI stores them on the practitioner's behalf.
+- Product wording never says "our doctors" and every profile states that the practitioner is independent.
+- Staff can verify, suspend and remove practitioners, but cannot edit clinical content.
+
 ## 2. User roles
 
 | Role | Can do |
@@ -57,7 +66,7 @@ Prototype stores one JSON object in browser storage. Production needs a relation
 | Reading | id, user id, type (bp, pulse, temp), value a, value b (bp only), date, source (manual, device, upload) |
 | JourneyEvent | id, user id, kind (start, symptoms, reading, visit, rx), title, date |
 | SymptomCheck | id, user id, symptom, duration, warning signs[], special situations[], result level, rules version, date |
-| Practitioner | id, user id, role, licensed states[], national provider identifier, licence numbers, languages, skills, verification status (review, verified, suspended), free now flag, weekly hours |
+| Practitioner | id, user id, role, visit fee (set by practitioner), platform agreement accepted at, licensed states[], national provider identifier, licence numbers, languages, skills, verification status (review, verified, suspended), free now flag, weekly hours |
 | VerificationCheck | id, practitioner id, type (identity, licence, provider record, certificates), result, checked by, date, next check date |
 | Visit | id, patient id, practitioner id, patient state at time of visit, mode (video, audio, chat), status (requested, accepted, declined, done, cancelled), payment method, fee, share readings flag, started at, ended at |
 | Message | id, visit id, sender id, text, sent at |

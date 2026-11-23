@@ -23,7 +23,7 @@ Consumer health apps explain data, and telehealth apps deliver visits. PulseAI j
 United States first, in [STATES], starting with records, explanations and visits. Prescriptions follow. No controlled medicines at launch [TO CONFIRM].
 
 ## Business model (proposed)
-A share of each visit fee, optional memberships, and plans for employers, clinics and sponsors. Visit fee: [FEE].
+PulseAI is a technology platform. Independent practitioners set their own visit fees and pay a platform fee of [AMOUNT]. Patients can add optional memberships, and employers, clinics and sponsors can buy plans.
 
 ## What we need
 - A clinical lead and a US health lawyer.

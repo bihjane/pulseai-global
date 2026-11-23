@@ -9,7 +9,7 @@ The designed deck lives in Claude: https://claude.ai/artifact/C5PWYPaS6VJzBai6qX
 5. **For clinicians.** Verified once, work on your own hours, paid per visit.
 6. **What is built.** Website, working app prototype, build specification, US rules brief.
 7. **Why the United States first.** Documented rules for licensure, privacy and prescribing; the app already matches patients to clinicians licensed in their state.
-8. **Business model (proposed).** Share of visit fees, memberships, employer and sponsor plans. [FEE]
+8. **Business model (proposed).** Technology platform. Practitioners set their fees and pay a platform fee [AMOUNT]; patient memberships; employer and sponsor plans.
 9. **Roadmap.** Records and explanations, then verification and directory, then visits and payments, then prescriptions, then AI answers and devices.
-10. **Open decisions.** Launch states, company structure, clinical lead, prescribing scope, vendors, funding.
+10. **Open decisions.** Launch state, practitioner agreement, clinical lead, prescribing scope, vendors, funding. Decided: technology platform.
 11. **The ask.** [AMOUNT] for [PERIOD]; clinical lead; legal counsel; build partner; pilot partners.

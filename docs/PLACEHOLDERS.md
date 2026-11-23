@@ -17,7 +17,9 @@ Each item is a placeholder in the prototype, the website or the documents until 
 - [ ] Emergency and crisis policy
 
 ## Legal
-- [ ] Company structure for clinical care in each state (management company and physician-owned practice)
+- [x] Company structure: decided by Charles on 22 November 2026. PulseAI is a technology platform; practitioners are independent
+- [ ] Practitioner agreement confirming each clinician is independent, with their own licence, insurance and records
+- [ ] Lawyer review of the platform model in Florida, including wording so PulseAI never appears to provide care
 - [ ] HIPAA privacy notice, security program and vendor agreements
 - [ ] Terms of use and telehealth consent wording
 - [ ] Malpractice and platform liability insurance
@@ -26,8 +28,8 @@ Each item is a placeholder in the prototype, the website or the documents until 
 - [ ] Website compliance statement, shown as `[COMPLIANCE STATEMENT, TO BE VERIFIED BY LEGAL]`
 
 ## Money
-- [ ] Visit fee, shown as `[FEE]` and `[YOUR PRICE]`
-- [ ] Clinician payout share, shown as `[AMOUNT]`
+- [ ] Visit fees, shown as `[FEE]` and `[YOUR PRICE]`, are set by each practitioner
+- [ ] Platform fee charged to practitioners, shown as `[AMOUNT]` (a flat or subscription fee, since a share of visit fees needs legal review)
 - [ ] Payment provider, and whether insurance is accepted at launch
 - [ ] Funding plan and every investor figure on the website (`[PATIENTS]`, `[CLINICIANS]`, `[COUNTRIES]`, `[STAGE]`, dates, links, `[INVESTOR EMAIL]`)
 

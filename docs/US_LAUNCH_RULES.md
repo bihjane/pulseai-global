@@ -9,7 +9,7 @@ The US rules are well documented, but they are not simple: most of them are set 
 | Area | What it means for PulseAI | Confidence |
 | --- | --- | --- |
 | Clinician licensure | A clinician must be authorised in the state where the patient is | Sourced |
-| Company structure | In many states a company cannot employ doctors directly | Sourced |
+| Company structure | Decided: technology platform, clinicians independent. Rules against companies employing doctors still shape the wording and fees | Sourced, needs counsel |
 | Prescribing | Ordinary medicines are possible; controlled medicines are uncertain after 31 December 2026 | Sourced |
 | HIPAA | Applies once PulseAI delivers care; vendors need signed agreements | Sourced |
 | FTC rule | Applies to the records and insights part if HIPAA does not | Sourced |
@@ -30,7 +30,14 @@ The US rules are well documented, but they are not simple: most of them are set 
 - One law-firm summary counts at least 34 states with some form of the prohibition. Source: [K&L Gates](https://files.klgates.com/files/228827_part_one_d2c_telehealth.pdf).
 - States are tightening these rules. Oregon's SB 951, signed 9 June 2025, limits management company influence over professional entities. Source: [Foley & Lardner](https://www.foley.com/p/102kfsh/oregons-new-corporate-practice-of-medicine-restrictions-five-takeaways-for-digi/).
 
-**Open question for Charles:** PulseAI's "marketplace of independent clinicians" needs a structure decision. Either clinicians practise through a physician-owned group that PulseAI manages, or PulseAI is strictly a technology platform for independent practices. A lawyer must choose per state.
+**Decision (Charles, 22 November 2026):** PulseAI will be a technology platform only. It does not employ clinicians or deliver care; independent practitioners use it to reach and treat their own patients.
+
+What the platform model implies, for the lawyer to confirm [VERIFY]:
+- Each practitioner holds their own licence, malpractice cover and patient records, and makes every clinical decision.
+- PulseAI must not direct care, set clinical protocols or present clinicians as "our doctors". The symptom guidance and explanations must stay informational.
+- Fees: practitioners set their own visit fees. Some states restrict sharing a percentage of clinical fees with a non-clinical company, so a flat or subscription platform fee is the safer starting assumption.
+- HIPAA: PulseAI is likely a business associate of each practitioner and needs an agreement with each one.
+- Verification and removal: PulseAI can check licences and remove practitioners without controlling how they practise.
 
 ## 3. Prescribing
 
@@ -73,7 +80,7 @@ The US rules are well documented, but they are not simple: most of them are set 
 ## 8. Questions for the lawyer
 
 1. Which three to five states should PulseAI launch in, given licensure and company structure rules?
-2. Platform or managed physician group?
+2. Does the platform-only model hold in Florida as designed, and what must the practitioner agreement and fee model say?
 3. Is PulseAI a HIPAA covered entity, a business associate, or outside HIPAA for each feature?
 4. Does the symptom guidance need FDA review as designed?
 5. What can clinicians prescribe on day one?
