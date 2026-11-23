@@ -606,7 +606,7 @@ function drawFlow(){
     next.disabled = !flow.pick;
   } else {
     var pro = flow.who==='pro';
-    b.innerHTML = '<h2 id="flowTitle">'+(pro ? 'Next, we verify you' : 'You are ready to begin')+'</h2><p class="lead">'+(pro ? 'You will confirm your identity, add your licence and upload your certificates. Our medical team reviews every application.' : 'Here is what we will set up for you first.')+'</p><div class="summary"><div><span>Language</span><strong>'+langLabel(lang)+'</strong></div><div><span>'+(pro?'Role':'First step')+'</span><strong>'+flow.pick+'</strong></div></div><div class="note">This is a design preview. Accounts open at launch, and nothing you chose here has been saved or sent.</div><div class="cta-row"><a class="btn btn-primary" href="https://claude.ai/artifact/M24CAtS87k8YUVMPGdfnw5">Open the app prototype</a><button type="button" class="btn btn-light" id="flowDone">Back to the site</button></div>';
+    b.innerHTML = '<h2 id="flowTitle">'+(pro ? 'Next, we verify you' : 'You are ready to begin')+'</h2><p class="lead">'+(pro ? 'You will confirm your identity, add your licence and upload your certificates. Our medical team reviews every application.' : 'Here is what we will set up for you first.')+'</p><div class="summary"><div><span>Language</span><strong>'+langLabel(lang)+'</strong></div><div><span>'+(pro?'Role':'First step')+'</span><strong>'+flow.pick+'</strong></div></div><div class="note">This is a design preview. Accounts open at launch, and nothing you chose here has been saved or sent.</div><div class="cta-row"><a class="btn btn-primary" href="../app/">Open the app prototype</a><button type="button" class="btn btn-light" id="flowDone">Back to the site</button></div>';
     next.style.display = 'none';
   }
 }

@@ -23,6 +23,10 @@ Product owner: Charles Sonnet. Design, prototype and documents prepared by Dr. J
 - Pitch deck: https://claude.ai/artifact/C5PWYPaS6VJzBai6qXfjKB
 - Design canvas: https://claude.ai/artifact/7qLqFsrjMpyMC7yUYPjppW
 
+## View in a browser (GitHub Pages)
+
+Once Pages is switched on: https://bihjane.github.io/pulseai-global/
+
 ## How to view
 
 Open either `index.html` in a browser. Both need an internet connection only for the font.
